@@ -371,39 +371,25 @@ export function IntroAnimation() {
               </div>
 
               <motion.div
-                initial={{ opacity: 0, scale: 0 }}
+                initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 300, delay: 0.3 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
                 className="relative z-10 text-center"
               >
-                <motion.div
-                  animate={{
-                    scale: [1, 1.15, 1],
-                    textShadow: [
-                      '0 0 30px #ff3cc7, 0 0 60px #a855f7',
-                      '0 0 60px #ff3cc7, 0 0 120px #a855f7',
-                      '0 0 30px #ff3cc7, 0 0 60px #a855f7',
-                    ]
-                  }}
-                  transition={{ duration: 0.5, repeat: 1 }}
-                  className="text-9xl font-black text-white mb-6"
-                  style={{ willChange: 'transform' }}
-                >
+                <div className="text-8xl font-black text-white mb-6">
                   PRODUCTIVITY
-                </motion.div>
+                </div>
                 <motion.div
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.4, delay: 0.4 }}
-                  className="h-3 bg-gradient-to-r from-yellow-400 via-neon-pink to-neon-purple rounded-full mx-auto shadow-2xl"
-                  style={{ boxShadow: '0 0 40px #ff3cc7' }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                  className="h-3 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mx-auto max-w-md"
                 />
                 <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6, type: 'spring' }}
-                  className="text-5xl font-black text-white/90 mt-8"
-                  style={{ textShadow: '0 0 20px #ffa3c5' }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-4xl font-bold text-white/90 mt-6"
                 >
                   がんばって！🌸
                 </motion.div>
@@ -411,32 +397,18 @@ export function IntroAnimation() {
             </>
           )}
 
-          {/* Stage 5: FREEZE FRAME - Dramatic hold */}
+          {/* Stage 5: FREEZE FRAME - Simplified */}
           {stage >= 5 && stage < 6 && (
             <motion.div
               initial={{ opacity: 1, scale: 1 }}
-              animate={{
-                scale: [1, 1.05, 1],
-              }}
-              transition={{
-                duration: 0.8,
-                ease: "easeInOut",
-                repeat: 1
-              }}
+              animate={{ scale: 1 }}
               className="relative z-10 text-center"
             >
-              <motion.div
-                className="text-9xl font-black text-white mb-6"
-                style={{
-                  textShadow: '0 0 50px #ff3cc7, 0 0 100px #a855f7, 0 0 150px #ffff00'
-                }}
-              >
+              <div className="text-8xl font-black text-white mb-6">
                 PRODUCTIVITY
-              </motion.div>
-              <div className="h-3 bg-gradient-to-r from-yellow-400 via-neon-pink to-neon-purple rounded-full mx-auto shadow-2xl"
-                  style={{ boxShadow: '0 0 60px #ff3cc7, 0 0 100px #a855f7' }}
-              />
-              <div className="text-5xl font-black text-white/90 mt-8"
+              </div>
+              <div className="h-3 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mx-auto max-w-md" />
+              <div className="text-4xl font-bold text-white/90 mt-6"
                   style={{ textShadow: '0 0 30px #ffa3c5' }}>
                 がんばって！🌸
               </div>
