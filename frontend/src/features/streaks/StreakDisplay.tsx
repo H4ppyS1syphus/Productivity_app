@@ -12,6 +12,11 @@ interface StreakDisplayProps {
 export function StreakDisplay({ currentStreak, longestStreak, onStreakMilestone }: StreakDisplayProps) {
   const [showCelebration, setShowCelebration] = useState(false)
   const [message, setMessage] = useState('')
+  const [celebratedMilestones, setCelebratedMilestones] = useState<number[]>(() => {
+    // Load celebrated milestones from localStorage
+    const stored = localStorage.getItem('celebratedMilestones')
+    return stored ? JSON.parse(stored) : []
+  })
 
   const getStreakTier = (streak: number) => {
     if (streak >= 365) return { name: 'GOD', color: 'from-yellow-400 via-pink-500 to-purple-600', glow: 'gold' }
@@ -63,12 +68,18 @@ export function StreakDisplay({ currentStreak, longestStreak, onStreakMilestone 
   }
 
   useEffect(() => {
-    // Celebrate on milestones
-    if ([1, 3, 7, 14, 30, 60, 90, 180, 365].includes(currentStreak)) {
+    // Celebrate on milestones - but only once per milestone
+    const milestones = [1, 3, 7, 14, 30, 60, 90, 180, 365]
+    if (milestones.includes(currentStreak) && !celebratedMilestones.includes(currentStreak)) {
       triggerCelebration()
       onStreakMilestone?.(currentStreak)
+
+      // Mark this milestone as celebrated
+      const newCelebrated = [...celebratedMilestones, currentStreak]
+      setCelebratedMilestones(newCelebrated)
+      localStorage.setItem('celebratedMilestones', JSON.stringify(newCelebrated))
     }
-  }, [currentStreak])
+  }, [currentStreak, celebratedMilestones])
 
   return (
     <div className="relative">

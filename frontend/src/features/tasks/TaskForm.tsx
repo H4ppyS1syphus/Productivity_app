@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { format } from 'date-fns'
+import { motion } from 'framer-motion'
 import { type TaskCreate } from '@/services/api'
 
 interface TaskFormProps {
@@ -41,14 +41,19 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-        Add New Task
+    <motion.form
+      onSubmit={handleSubmit}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white/10 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20"
+    >
+      <h2 className="text-3xl font-black bg-gradient-to-r from-neon-pink to-neon-purple bg-clip-text text-transparent mb-6">
+        ✨ Add New Task
       </h2>
 
       {/* Title */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <div className="mb-5">
+        <label className="block text-sm font-bold text-white/90 mb-2">
           Task Title *
         </label>
         <input
@@ -56,16 +61,17 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="What needs to be done?"
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 rounded-xl border-2 border-white/30
+                   bg-white/20 text-white placeholder-white/50
+                   focus:outline-none focus:ring-2 focus:ring-neon-pink focus:border-neon-pink
+                   transition-all"
           required
         />
       </div>
 
       {/* Description */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <div className="mb-5">
+        <label className="block text-sm font-bold text-white/90 mb-2">
           Description
         </label>
         <textarea
@@ -73,85 +79,140 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Add more details..."
           rows={3}
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                   bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                   focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 rounded-xl border-2 border-white/30
+                   bg-white/20 text-white placeholder-white/50
+                   focus:outline-none focus:ring-2 focus:ring-neon-pink focus:border-neon-pink
+                   transition-all resize-none"
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        {/* Task Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Task Type
-          </label>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value as any)}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                     bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                     focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="long_term">Long Term</option>
-            <option value="gym_workout">Gym Workout</option>
-          </select>
-        </div>
+      {/* Task Type */}
+      <div className="mb-5">
+        <label className="block text-sm font-bold text-white/90 mb-2">
+          Task Type
+        </label>
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value as any)}
+          className="w-full px-4 py-3 rounded-xl border-2 border-white/30
+                   bg-white/20 text-white
+                   focus:outline-none focus:ring-2 focus:ring-neon-pink focus:border-neon-pink
+                   transition-all cursor-pointer"
+        >
+          <option value="daily" className="bg-gray-800">📅 Daily</option>
+          <option value="weekly" className="bg-gray-800">📆 Weekly</option>
+          <option value="long_term" className="bg-gray-800">🎯 Long Term</option>
+          <option value="gym_workout" className="bg-gray-800">💪 Gym Workout</option>
+        </select>
+      </div>
 
-        {/* Due Date */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      {/* Due Date */}
+      <div className="mb-5">
+          <label className="block text-sm font-bold text-white/90 mb-2">
             Due Date
           </label>
+
+          {/* Quick Date Buttons */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            {[
+              { label: 'Today', hours: 0 },
+              { label: 'Tomorrow', hours: 24 },
+              { label: 'In 3 days', hours: 72 },
+              { label: 'Next week', hours: 168 },
+              { label: 'In 2 weeks', hours: 336 },
+            ].map((preset) => (
+              <motion.button
+                key={preset.label}
+                type="button"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  const date = new Date()
+                  date.setHours(date.getHours() + preset.hours)
+                  setDueDate(date.toISOString().slice(0, 16))
+                }}
+                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white/80 hover:text-white
+                         text-xs font-semibold rounded-lg border border-white/20 hover:border-neon-cyan
+                         transition-all"
+              >
+                {preset.label}
+              </motion.button>
+            ))}
+            {dueDate && (
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setDueDate('')}
+                className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300
+                         text-xs font-semibold rounded-lg border border-red-500/50
+                         transition-all"
+              >
+                ✕ Clear
+              </motion.button>
+            )}
+          </div>
+
           <input
             type="datetime-local"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                     bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                     focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 rounded-xl border-2 border-white/30
+                     bg-white/20 text-white
+                     focus:outline-none focus:ring-2 focus:ring-neon-pink focus:border-neon-pink
+                     transition-all"
           />
-        </div>
       </div>
 
       {/* Pause on Away */}
       <div className="mb-6">
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            checked={pauseOnAway}
-            onChange={(e) => setPauseOnAway(e.target.checked)}
-            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-          />
-          <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-            Pause this task when I'm away
+        <label className="flex items-center cursor-pointer group">
+          <div className="relative">
+            <input
+              type="checkbox"
+              checked={pauseOnAway}
+              onChange={(e) => setPauseOnAway(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 rounded-full bg-white/20 border-2 border-white/30
+                          peer-checked:bg-gradient-to-r peer-checked:from-neon-pink peer-checked:to-neon-purple
+                          peer-checked:border-neon-pink transition-all"></div>
+            <div className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white transition-all
+                          peer-checked:translate-x-5"></div>
+          </div>
+          <span className="ml-3 text-sm font-semibold text-white/90 group-hover:text-white transition-colors">
+            ✈️ Pause this task when I'm away
           </span>
         </label>
       </div>
 
       {/* Buttons */}
       <div className="flex gap-3">
-        <button
+        <motion.button
           type="submit"
           disabled={loading || !title.trim()}
-          className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400
-                   text-white font-medium rounded-lg transition-colors duration-200"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="flex-1 px-6 py-4 bg-gradient-to-r from-neon-pink to-neon-purple
+                   disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-50
+                   text-white font-black text-lg rounded-xl shadow-lg
+                   hover:shadow-neon-pink/50 transition-all disabled:cursor-not-allowed"
         >
-          {loading ? 'Adding...' : 'Add Task'}
-        </button>
+          {loading ? '✨ Adding...' : '✨ Add Task'}
+        </motion.button>
         {onCancel && (
-          <button
+          <motion.button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700
-                     dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200
-                     font-medium rounded-lg transition-colors duration-200"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-6 py-4 bg-white/20 hover:bg-white/30
+                     text-white font-bold rounded-xl transition-all border border-white/30"
           >
             Cancel
-          </button>
+          </motion.button>
         )}
       </div>
-    </form>
+    </motion.form>
   )
 }

@@ -6,6 +6,8 @@ import { TaskList } from './features/tasks/TaskList'
 import { StreakDisplay } from './features/streaks/StreakDisplay'
 import { PomodoroTimer } from './features/pomodoro/PomodoroTimer'
 import { GymTracker } from './features/gym/GymTracker'
+import { CapybaraMascot } from './components/CapybaraMascot'
+import { IntroAnimation } from './components/IntroAnimation'
 
 type FilterType = 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
 type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym'
@@ -71,8 +73,6 @@ function App() {
   }
 
   const handleDeleteTask = async (taskId: number) => {
-    if (!confirm('Are you sure you want to delete this task?')) return
-
     try {
       await api.deleteTask(taskId)
       setTasks(tasks.filter(t => t.id !== taskId))
@@ -101,11 +101,17 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900">
+      {/* Intro Animation */}
+      <IntroAnimation />
+
       {/* Animated background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-pink/20 rounded-full blur-3xl animate-pulse-slow" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neon-purple/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
       </div>
+
+      {/* Capybara Mascot */}
+      <CapybaraMascot />
 
       <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
         {/* Header */}
@@ -147,20 +153,14 @@ function App() {
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative px-8 py-4 rounded-2xl font-bold text-lg transition-all ${
+              className={`relative px-8 py-4 rounded-2xl font-bold text-lg transition-all overflow-hidden ${
                 activeTab === tab.id
                   ? `bg-gradient-to-r ${tab.color} text-white shadow-2xl`
                   : 'bg-white/10 backdrop-blur-sm text-white/60 hover:bg-white/20'
               }`}
             >
-              <span className="text-2xl mr-2">{tab.emoji}</span>
-              {tab.label}
-              {activeTab === tab.id && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute inset-0 rounded-2xl animate-glow pointer-events-none"
-                />
-              )}
+              <span className="relative z-10 text-2xl mr-2">{tab.emoji}</span>
+              <span className="relative z-10">{tab.label}</span>
             </motion.button>
           ))}
         </div>
@@ -169,10 +169,10 @@ function App() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
           >
             {activeTab === 'tasks' && (
               <div>
@@ -199,26 +199,26 @@ function App() {
                 {/* Filter Tabs */}
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl shadow-xl p-3 mb-6 flex flex-wrap gap-2">
                   {[
-                    { value: 'all', label: 'All', count: stats.total },
-                    { value: 'daily', label: 'Daily', count: stats.daily },
-                    { value: 'weekly', label: 'Weekly', count: stats.weekly },
-                    { value: 'long_term', label: 'Long Term', count: stats.longTerm },
-                    { value: 'gym_workout', label: 'Gym', count: stats.gym },
-                    { value: 'pending', label: 'Pending', count: stats.pending },
-                    { value: 'completed', label: 'Completed', count: stats.completed },
+                    { value: 'all', label: '📋 All Tasks', count: stats.total },
+                    { value: 'pending', label: '⚡ Active', count: stats.pending },
+                    { value: 'completed', label: '✅ Done', count: stats.completed },
+                    { value: 'daily', label: '📅 Daily', count: stats.daily },
+                    { value: 'weekly', label: '📆 Weekly', count: stats.weekly },
+                    { value: 'long_term', label: '🎯 Long Term', count: stats.longTerm },
+                    { value: 'gym_workout', label: '💪 Gym', count: stats.gym },
                   ].map((tab) => (
                     <motion.button
                       key={tab.value}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setFilter(tab.value as FilterType)}
-                      className={`px-6 py-3 rounded-xl font-bold transition-all ${
+                      className={`px-4 py-2.5 rounded-xl font-bold transition-all text-sm ${
                         filter === tab.value
                           ? 'bg-gradient-to-r from-neon-pink to-neon-purple text-white shadow-lg'
                           : 'bg-white/10 text-white/60 hover:bg-white/20'
                       }`}
                     >
-                      {tab.label} ({tab.count})
+                      {tab.label} <span className="opacity-70">({tab.count})</span>
                     </motion.button>
                   ))}
                 </div>
