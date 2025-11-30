@@ -25,8 +25,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        settings.frontend_url,  # dev URL
-        "https://productivity-app.vercel.app"  # production URL
+        "http://localhost:5173",               # local dev
+        "https://productivity-app.vercel.app" # deployed frontend
     ],
     allow_credentials=True,
     allow_methods=["*"],
