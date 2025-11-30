@@ -6,11 +6,12 @@ import { TaskList } from './features/tasks/TaskList'
 import { StreakDisplay } from './features/streaks/StreakDisplay'
 import { PomodoroTimer } from './features/pomodoro/PomodoroTimer'
 import { GymTracker } from './features/gym/GymTracker'
+import { AwayMode } from './features/away/AwayMode'
 import { CapybaraMascot } from './components/CapybaraMascot'
 import { IntroAnimation } from './components/IntroAnimation'
 
 type FilterType = 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
-type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym'
+type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away'
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -97,6 +98,7 @@ function App() {
     { id: 'streaks' as TabType, label: 'Streaks', emoji: '🔥', color: 'from-orange-500 to-red-500' },
     { id: 'pomodoro' as TabType, label: 'Focus', emoji: '⏱️', color: 'from-neon-cyan to-neon-blue' },
     { id: 'gym' as TabType, label: 'Gym', emoji: '💪', color: 'from-neon-purple to-purple-600' },
+    { id: 'away' as TabType, label: 'Away', emoji: '✈️', color: 'from-cyan-500 to-blue-500' },
   ]
 
   return (
@@ -275,6 +277,8 @@ function App() {
             {activeTab === 'pomodoro' && <PomodoroTimer />}
 
             {activeTab === 'gym' && <GymTracker />}
+
+            {activeTab === 'away' && <AwayMode />}
           </motion.div>
         </AnimatePresence>
       </div>

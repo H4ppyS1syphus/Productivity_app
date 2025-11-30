@@ -55,9 +55,10 @@ async def health_check():
 
 
 # Register routers
-from .routers import tasks
+from .routers import tasks, away_periods
 
 app.include_router(tasks.router, prefix="/api/tasks", tags=["tasks"])
+app.include_router(away_periods.router, prefix="/api/away-periods", tags=["away-periods"])
 
 # TODO: Add more routers as they're implemented
 # from .routers import auth, streaks, calendar, gym, pomodoro

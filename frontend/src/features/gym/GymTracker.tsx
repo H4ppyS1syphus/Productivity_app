@@ -14,9 +14,7 @@ interface GymEntry {
 
 export function GymTracker() {
   const [entries, setEntries] = useState<GymEntry[]>([
-    { date: '2025-11-01', bodyweight: 75, squat: 100, bench: 80, deadlift: 120 },
-    { date: '2025-11-15', bodyweight: 75.5, squat: 105, bench: 82.5, deadlift: 125 },
-    { date: '2025-11-30', bodyweight: 76, squat: 110, bench: 85, deadlift: 130 },
+    { date: '2025-11-30', bodyweight: 83, squat: 150, bench: 87.5, deadlift: 170 },
   ])
   const [showForm, setShowForm] = useState(false)
   const [newEntry, setNewEntry] = useState<GymEntry>({

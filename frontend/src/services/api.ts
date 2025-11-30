@@ -35,6 +35,24 @@ export interface TaskList {
   page_size: number;
 }
 
+export interface AwayPeriod {
+  id: number;
+  user_id: number;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+}
+
+export interface AwayPeriodCreate {
+  start_date: string;
+  end_date: string;
+}
+
+export interface AwayPeriodList {
+  away_periods: AwayPeriod[];
+  current_away_period: AwayPeriod | null;
+}
+
 class APIClient {
   private baseURL: string;
 
@@ -108,6 +126,40 @@ class APIClient {
 
   async deleteTask(taskId: number): Promise<void> {
     return this.request<void>(`/api/tasks/${taskId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Away period endpoints
+  async getAwayPeriods(params?: {
+    skip?: number;
+    limit?: number;
+  }): Promise<AwayPeriodList> {
+    const queryParams = new URLSearchParams();
+    if (params?.skip) queryParams.set('skip', params.skip.toString());
+    if (params?.limit) queryParams.set('limit', params.limit.toString());
+
+    const queryString = queryParams.toString();
+    const endpoint = `/api/away-periods${queryString ? `?${queryString}` : ''}`;
+
+    return this.request<AwayPeriodList>(endpoint);
+  }
+
+  async createAwayPeriod(period: AwayPeriodCreate): Promise<AwayPeriod> {
+    return this.request<AwayPeriod>('/api/away-periods/', {
+      method: 'POST',
+      body: JSON.stringify(period),
+    });
+  }
+
+  async deactivateAwayPeriod(periodId: number): Promise<AwayPeriod> {
+    return this.request<AwayPeriod>(`/api/away-periods/${periodId}/deactivate`, {
+      method: 'POST',
+    });
+  }
+
+  async deleteAwayPeriod(periodId: number): Promise<void> {
+    return this.request<void>(`/api/away-periods/${periodId}`, {
       method: 'DELETE',
     });
   }

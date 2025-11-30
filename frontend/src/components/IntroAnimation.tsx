@@ -9,28 +9,28 @@ export function IntroAnimation() {
     // Show intro on every page load!
     setShow(true)
 
-    // Anime-style pacing: FAST → PAUSE → SLOW → FAST → PAUSE
-    // Stage 1: Power up - FAST (0-1s)
-    const stage1 = setTimeout(() => setStage(1), 300)
+    // Anime-style pacing: FAST → PAUSE → FAST (optimized for performance)
+    // Stage 1: Power up - FAST (0-0.5s)
+    const stage1 = setTimeout(() => setStage(1), 200)
 
-    // Stage 2: Capybara entrance - SLOW buildup (1-2.5s)
-    const stage2 = setTimeout(() => setStage(2), 1000)
+    // Stage 2: Capybara entrance - MEDIUM (0.5-1.5s)
+    const stage2 = setTimeout(() => setStage(2), 600)
 
-    // Stage 3: MENACING pause - DRAMATIC HOLD (2.5-3.5s)
-    const stage3 = setTimeout(() => setStage(3), 2500)
+    // Stage 3: MENACING pause - DRAMATIC HOLD (1.5-2.5s)
+    const stage3 = setTimeout(() => setStage(3), 1500)
 
-    // Stage 4: ORA ORA - EXPLOSIVE FAST (3.5-5s)
-    const stage4 = setTimeout(() => setStage(4), 3500)
+    // Stage 4: ORA ORA - EXPLOSIVE FAST (2.5-3.5s)
+    const stage4 = setTimeout(() => setStage(4), 2500)
 
-    // Stage 5: Impact hold - FREEZE FRAME (5-6s)
-    const stage5 = setTimeout(() => setStage(5), 5000)
+    // Stage 5: Impact hold - FREEZE FRAME (3.5-4s)
+    const stage5 = setTimeout(() => setStage(5), 3500)
 
-    // Stage 6: Fade out (6-7s)
-    const stage6 = setTimeout(() => setStage(6), 6000)
+    // Stage 6: Fade out (4-4.5s)
+    const stage6 = setTimeout(() => setStage(6), 4000)
 
     const hideTimeout = setTimeout(() => {
       setShow(false)
-    }, 7200)
+    }, 4800)
 
     return () => {
       clearTimeout(stage1)
@@ -54,22 +54,21 @@ export function IntroAnimation() {
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[9999] flex items-center justify-center bg-black overflow-hidden"
       >
-        {/* JoJo Speed Lines */}
+        {/* JoJo Speed Lines - Optimized */}
         <div className="absolute inset-0">
-          {[...Array(40)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
             <motion.div
               key={i}
               initial={{ scaleX: 0, opacity: 0 }}
-              animate={stage >= 1 ? {
+              animate={stage >= 1 && stage < 6 ? {
                 scaleX: [0, 2],
-                opacity: [0, 1, 0],
+                opacity: [0, 0.8, 0],
                 x: ['-100%', '200%']
-              } : {}}
+              } : { opacity: 0 }}
               transition={{
-                duration: 0.4,
-                delay: i * 0.02,
-                repeat: stage >= 1 && stage < 6 ? Infinity : 0,
-                repeatDelay: 0.5,
+                duration: 0.6,
+                delay: i * 0.03,
+                repeat: 2,
                 ease: "easeOut"
               }}
               className={`absolute h-1 ${
@@ -78,40 +77,40 @@ export function IntroAnimation() {
                 'bg-gradient-to-r from-neon-cyan to-blue-600'
               }`}
               style={{
-                top: `${Math.random() * 100}%`,
+                top: `${(i / 20) * 100}%`,
                 width: '200%',
                 left: '-100%',
-                transform: `rotate(${-10 + Math.random() * 20}deg)`
+                transform: `rotate(${-10 + (i % 5) * 5}deg)`,
+                willChange: 'transform, opacity'
               }}
             />
           ))}
         </div>
 
-        {/* MENACING effect (ゴゴゴゴ) - DRAMATIC PAUSE */}
+        {/* MENACING effect (ゴゴゴゴ) - DRAMATIC PAUSE - Optimized */}
         {stage >= 3 && stage < 6 && (
-          <div className="absolute inset-0 overflow-hidden">
-            {[...Array(8)].map((_, i) => (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(6)].map((_, i) => (
               <motion.div
                 key={`menace-${i}`}
                 initial={{ opacity: 0, scale: 0, rotate: 0 }}
                 animate={{
-                  opacity: [0, 1, 0],
-                  scale: [0.5, 1.5],
-                  rotate: [0, 15],
-                  x: [0, (i % 2 === 0 ? 50 : -50)],
-                  y: [0, (i % 2 === 0 ? -50 : 50)]
+                  opacity: [0, 1, 0.5, 0],
+                  scale: [0.5, 1.2],
+                  rotate: [0, 10],
                 }}
                 transition={{
-                  duration: 0.6,
-                  delay: i * 0.05,
-                  repeat: Infinity,
-                  repeatDelay: 0.2
+                  duration: 1,
+                  delay: i * 0.1,
+                  repeat: 1,
+                  ease: "easeInOut"
                 }}
                 className="absolute text-6xl font-black text-neon-purple"
                 style={{
-                  left: `${10 + (i % 4) * 25}%`,
-                  top: `${10 + Math.floor(i / 4) * 40}%`,
-                  textShadow: '0 0 20px #a855f7, 0 0 40px #ff3cc7'
+                  left: `${15 + (i % 3) * 30}%`,
+                  top: `${20 + Math.floor(i / 3) * 50}%`,
+                  textShadow: '0 0 20px #a855f7, 0 0 40px #ff3cc7',
+                  willChange: 'transform, opacity'
                 }}
               >
                 ゴ
@@ -155,8 +154,9 @@ export function IntroAnimation() {
                       '0 0 20px #06b6d4'
                     ]
                   }}
-                  transition={{ duration: 0.3, repeat: Infinity }}
+                  transition={{ duration: 0.3, repeat: 1 }}
                   className="text-7xl font-black text-white"
+                  style={{ willChange: 'transform' }}
                 >
                   準備！
                 </motion.div>
@@ -307,14 +307,15 @@ export function IntroAnimation() {
                     scale: [1, 1.2, 1],
                     rotate: [0, 5, -5, 0]
                   }}
-                  transition={{ duration: 0.2, repeat: Infinity }}
+                  transition={{ duration: 0.4, repeat: 2 }}
                   className="text-8xl font-black"
                   style={{
                     background: 'linear-gradient(45deg, #ff3cc7, #a855f7, #ff3cc7)',
                     backgroundSize: '200% 200%',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    textShadow: '0 0 80px rgba(255, 60, 199, 0.8)'
+                    textShadow: '0 0 80px rgba(255, 60, 199, 0.8)',
+                    willChange: 'transform'
                   }}
                 >
                   ZA WARUDO!
@@ -384,8 +385,9 @@ export function IntroAnimation() {
                       '0 0 30px #ff3cc7, 0 0 60px #a855f7',
                     ]
                   }}
-                  transition={{ duration: 0.3, repeat: Infinity }}
+                  transition={{ duration: 0.5, repeat: 1 }}
                   className="text-9xl font-black text-white mb-6"
+                  style={{ willChange: 'transform' }}
                 >
                   PRODUCTIVITY
                 </motion.div>
