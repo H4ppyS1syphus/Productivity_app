@@ -29,13 +29,10 @@ export function GymTracker() {
 
   const addEntry = () => {
     const previous = entries[entries.length - 1]
-    let isNewPR = false
-
     if (previous) {
       if ((newEntry.squat && newEntry.squat > (previous.squat || 0)) ||
           (newEntry.bench && newEntry.bench > (previous.bench || 0)) ||
           (newEntry.deadlift && newEntry.deadlift > (previous.deadlift || 0))) {
-        isNewPR = true
         celebratePR()
         setMessage(getRandomMessage(GYM_MESSAGES.pr))
       } else {
