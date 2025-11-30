@@ -57,7 +57,7 @@ class APIClient {
   private baseURL: string;
 
   constructor(baseURL: string) {
-    this.baseURL = baseURL;
+    this.baseURL = baseURL.replace(/\/+$/, ""); // remove trailing slashes
   }
 
   private async request<T>(
