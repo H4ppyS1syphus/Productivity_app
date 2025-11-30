@@ -68,7 +68,7 @@ export function GymTracker() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="mb-6 p-4 bg-gradient-to-r from-neon-pink to-neon-purple rounded-lg text-white text-center font-bold text-lg"
+            className="mb-6 p-4 bg-gradient-to-r from-mocha-pink to-mocha-mauve rounded-lg text-white text-center font-bold text-lg"
           >
             {message}
           </motion.div>
@@ -78,10 +78,10 @@ export function GymTracker() {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {[
-          { label: 'Squat', value: latest.squat, color: 'from-red-500 to-pink-500', emoji: '🏋️' },
-          { label: 'Bench', value: latest.bench, color: 'from-blue-500 to-cyan-500', emoji: '💪' },
-          { label: 'Deadlift', value: latest.deadlift, color: 'from-purple-500 to-pink-500', emoji: '⚡' },
-          { label: 'Total', value: total, color: 'from-yellow-500 to-orange-500', emoji: '🔥' },
+          { label: 'Squat', value: latest.squat, color: 'from-mocha-red to-mocha-pink', emoji: '🏋️' },
+          { label: 'Bench', value: latest.bench, color: 'from-mocha-blue to-mocha-sapphire', emoji: '💪' },
+          { label: 'Deadlift', value: latest.deadlift, color: 'from-mocha-mauve to-mocha-pink', emoji: '⚡' },
+          { label: 'Total', value: total, color: 'from-mocha-yellow to-mocha-peach', emoji: '🔥' },
         ].map((stat) => (
           <motion.div
             key={stat.label}
@@ -112,7 +112,7 @@ export function GymTracker() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-xl mb-6"
+        className="bg-mocha-surface0/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl mb-6"
       >
         <h3 className="text-2xl font-bold text-white mb-4">Strength Progress 📈</h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -138,7 +138,7 @@ export function GymTracker() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setShowForm(true)}
-          className="w-full p-6 bg-gradient-to-r from-neon-pink to-neon-purple rounded-2xl text-white font-bold text-xl shadow-xl hover:shadow-2xl transition-shadow"
+          className="w-full p-6 bg-gradient-to-r from-mocha-pink to-mocha-mauve rounded-2xl text-white font-bold text-xl shadow-xl hover:shadow-2xl transition-shadow"
         >
           + Log New Workout 💪
         </motion.button>
@@ -146,70 +146,70 @@ export function GymTracker() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-xl"
+          className="bg-mocha-surface0/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl"
         >
           <h3 className="text-2xl font-bold text-white mb-4">New Workout Entry</h3>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-white/80 mb-2">Date</label>
+              <label className="block text-mocha-subtext1 mb-2">Date</label>
               <input
                 type="date"
                 value={newEntry.date}
                 onChange={(e) => setNewEntry({ ...newEntry, date: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-neon-pink"
+                className="w-full px-4 py-2 rounded-lg bg-mocha-surface1/60 text-white border border-mocha-blue/30 focus:outline-none focus:ring-2 focus:ring-mocha-pink"
               />
             </div>
             <div>
-              <label className="block text-white/80 mb-2">Bodyweight (kg)</label>
+              <label className="block text-mocha-subtext1 mb-2">Bodyweight (kg)</label>
               <input
                 type="number"
                 step="0.1"
                 value={newEntry.bodyweight || ''}
                 onChange={(e) => setNewEntry({ ...newEntry, bodyweight: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-neon-pink"
+                className="w-full px-4 py-2 rounded-lg bg-mocha-surface1/60 text-white border border-mocha-blue/30 focus:outline-none focus:ring-2 focus:ring-mocha-pink"
               />
             </div>
             <div>
-              <label className="block text-white/80 mb-2">Squat 1RM (kg)</label>
+              <label className="block text-mocha-subtext1 mb-2">Squat 1RM (kg)</label>
               <input
                 type="number"
                 step="2.5"
                 value={newEntry.squat || ''}
                 onChange={(e) => setNewEntry({ ...newEntry, squat: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-neon-pink"
+                className="w-full px-4 py-2 rounded-lg bg-mocha-surface1/60 text-white border border-mocha-blue/30 focus:outline-none focus:ring-2 focus:ring-mocha-pink"
               />
             </div>
             <div>
-              <label className="block text-white/80 mb-2">Bench 1RM (kg)</label>
+              <label className="block text-mocha-subtext1 mb-2">Bench 1RM (kg)</label>
               <input
                 type="number"
                 step="2.5"
                 value={newEntry.bench || ''}
                 onChange={(e) => setNewEntry({ ...newEntry, bench: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-neon-pink"
+                className="w-full px-4 py-2 rounded-lg bg-mocha-surface1/60 text-white border border-mocha-blue/30 focus:outline-none focus:ring-2 focus:ring-mocha-pink"
               />
             </div>
             <div>
-              <label className="block text-white/80 mb-2">Deadlift 1RM (kg)</label>
+              <label className="block text-mocha-subtext1 mb-2">Deadlift 1RM (kg)</label>
               <input
                 type="number"
                 step="2.5"
                 value={newEntry.deadlift || ''}
                 onChange={(e) => setNewEntry({ ...newEntry, deadlift: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-neon-pink"
+                className="w-full px-4 py-2 rounded-lg bg-mocha-surface1/60 text-white border border-mocha-blue/30 focus:outline-none focus:ring-2 focus:ring-mocha-pink"
               />
             </div>
           </div>
           <div className="flex gap-4">
             <button
               onClick={addEntry}
-              className="flex-1 py-3 bg-gradient-to-r from-neon-pink to-neon-purple rounded-lg text-white font-bold hover:shadow-lg transition-shadow"
+              className="flex-1 py-3 bg-gradient-to-r from-mocha-pink to-mocha-mauve rounded-lg text-white font-bold hover:shadow-lg transition-shadow"
             >
               Save Entry 💪
             </button>
             <button
               onClick={() => setShowForm(false)}
-              className="px-6 py-3 bg-white/20 rounded-lg text-white font-semibold hover:bg-white/30 transition-colors"
+              className="px-6 py-3 bg-mocha-surface1/60 rounded-lg text-white font-semibold hover:bg-white/30 transition-colors"
             >
               Cancel
             </button>

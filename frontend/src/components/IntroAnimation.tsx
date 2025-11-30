@@ -73,8 +73,8 @@ export function IntroAnimation() {
               }}
               className={`absolute h-1 ${
                 i % 3 === 0 ? 'bg-gradient-to-r from-yellow-400 to-orange-600' :
-                i % 3 === 1 ? 'bg-gradient-to-r from-neon-pink to-purple-600' :
-                'bg-gradient-to-r from-neon-cyan to-blue-600'
+                i % 3 === 1 ? 'bg-gradient-to-r from-mocha-pink to-mocha-mauve' :
+                'bg-gradient-to-r from-mocha-sapphire to-mocha-blue'
               }`}
               style={{
                 top: `${(i / 20) * 100}%`,
@@ -105,7 +105,7 @@ export function IntroAnimation() {
                   repeat: 1,
                   ease: "easeInOut"
                 }}
-                className="absolute text-6xl font-black text-neon-purple"
+                className="absolute text-6xl font-black text-mocha-mauve"
                 style={{
                   left: `${15 + (i % 3) * 30}%`,
                   top: `${20 + Math.floor(i / 3) * 50}%`,
@@ -450,7 +450,7 @@ export function IntroAnimation() {
                   duration: 1 + Math.random(),
                   delay: Math.random() * 0.5
                 }}
-                className="absolute w-4 h-4 rounded-full bg-gradient-to-r from-neon-pink to-neon-purple"
+                className="absolute w-4 h-4 rounded-full bg-gradient-to-r from-mocha-pink to-mocha-mauve"
                 style={{
                   left: 0,
                   top: 0

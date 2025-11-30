@@ -11,7 +11,9 @@
       "Bash(source:*)",
       "Bash(pip install:*)",
       "Bash(curl:*)",
-      "Bash(jq:*)"
+      "Bash(jq:*)",
+      "Bash(TaskList.tsx)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

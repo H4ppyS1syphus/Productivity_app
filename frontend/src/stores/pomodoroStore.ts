@@ -41,11 +41,11 @@ export const usePomodoroStore = create<PomodoroState>((set, get) => ({
   getModeConfig: (mode: TimerMode) => {
     switch (mode) {
       case 'work':
-        return { duration: WORK_TIME, color: 'from-blue-500 to-blue-600', label: 'Focus Time', emoji: '🎯' }
+        return { duration: WORK_TIME, color: 'from-mocha-blue to-mocha-sapphire', label: 'Focus Time', emoji: '🎯' }
       case 'break':
-        return { duration: BREAK_TIME, color: 'from-green-500 to-green-600', label: 'Short Break', emoji: '☕' }
+        return { duration: BREAK_TIME, color: 'from-mocha-green to-mocha-teal', label: 'Short Break', emoji: '☕' }
       case 'longBreak':
-        return { duration: LONG_BREAK_TIME, color: 'from-purple-500 to-purple-600', label: 'Long Break', emoji: '🌸' }
+        return { duration: LONG_BREAK_TIME, color: 'from-mocha-mauve to-mocha-pink', label: 'Long Break', emoji: '🌸' }
     }
   },
 

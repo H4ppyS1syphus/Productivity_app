@@ -10,6 +10,7 @@ import { AwayMode } from './features/away/AwayMode'
 import { CapybaraMascot } from './components/CapybaraMascot'
 import { IntroAnimation } from './components/IntroAnimation'
 import { FloatingTimer } from './components/FloatingTimer'
+import { PWAInstallPrompt } from './components/PWAInstallPrompt'
 
 type FilterType = 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
 type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away'
@@ -95,22 +96,22 @@ function App() {
   }
 
   const tabs = [
-    { id: 'tasks' as TabType, label: 'Tasks', emoji: '✅', color: 'from-tokyo-green to-emerald-600' },
-    { id: 'streaks' as TabType, label: 'Streaks', emoji: '🔥', color: 'from-tokyo-orange to-orange-600' },
-    { id: 'pomodoro' as TabType, label: 'Focus', emoji: '⏱️', color: 'from-tokyo-blue to-blue-600' },
-    { id: 'gym' as TabType, label: 'Gym', emoji: '💪', color: 'from-tokyo-magenta to-purple-600' },
-    { id: 'away' as TabType, label: 'Away', emoji: '✈️', color: 'from-tokyo-cyan to-cyan-600' },
+    { id: 'tasks' as TabType, label: 'Tasks', emoji: '✅', color: 'from-mocha-green to-emerald-500' },
+    { id: 'streaks' as TabType, label: 'Streaks', emoji: '🔥', color: 'from-mocha-peach to-orange-500' },
+    { id: 'pomodoro' as TabType, label: 'Focus', emoji: '⏱️', color: 'from-mocha-blue to-blue-500' },
+    { id: 'gym' as TabType, label: 'Gym', emoji: '💪', color: 'from-mocha-mauve to-purple-500' },
+    { id: 'away' as TabType, label: 'Away', emoji: '✈️', color: 'from-mocha-sapphire to-cyan-500' },
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-tokyo-bgDark via-tokyo-bg to-indigo-950">
+    <div className="min-h-screen bg-gradient-to-br from-mocha-crust via-mocha-base to-mocha-mantle">
       {/* Intro Animation */}
       <IntroAnimation />
 
       {/* Subtle animated background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-30">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-tokyo-blue/20 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-tokyo-magenta/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-mocha-blue/20 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-mocha-mauve/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
       </div>
 
       {/* Floating Timer (shows when not on pomodoro tab) */}
@@ -121,17 +122,20 @@ function App() {
       {/* Capybara Mascot */}
       <CapybaraMascot />
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
-        {/* Header */}
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
+
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8 max-w-7xl relative z-10">
+        {/* Header - Mobile Optimized */}
         <motion.header
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-10"
+          className="text-center mb-6 md:mb-10"
         >
-          <h1 className="text-6xl font-black bg-gradient-to-r from-tokyo-blue via-tokyo-magenta to-tokyo-cyan bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-mocha-blue via-mocha-mauve to-mocha-sapphire bg-clip-text text-transparent mb-2 md:mb-3">
             Productivity App
           </h1>
-          <p className="text-tokyo-fg/70 text-lg font-medium">
+          <p className="text-mocha-text/70 text-sm md:text-lg font-medium px-4">
             がんばって！ (Ganbatte!) - Let's do our best! 🌸
           </p>
         </motion.header>
@@ -143,7 +147,7 @@ function App() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-tokyo-red/20 backdrop-blur-sm border border-tokyo-red/50 text-white px-6 py-4 rounded-2xl mb-6 flex items-center justify-between"
+              className="bg-mocha-red/20 backdrop-blur-sm border border-mocha-red/50 text-white px-6 py-4 rounded-2xl mb-6 flex items-center justify-between"
             >
               <span className="font-semibold">{error}</span>
               <button onClick={() => setError(null)} className="text-white/80 hover:text-white text-2xl">
@@ -153,22 +157,22 @@ function App() {
           )}
         </AnimatePresence>
 
-        {/* Navigation Tabs */}
-        <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
+        {/* Navigation Tabs - Mobile Optimized */}
+        <div className="flex gap-2 md:gap-3 mb-6 md:mb-8 overflow-x-auto pb-2 scrollbar-hide -mx-3 md:mx-0 px-3 md:px-0">
           {tabs.map((tab) => (
             <motion.button
               key={tab.id}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative px-8 py-4 rounded-2xl font-bold text-lg transition-all ${
+              className={`relative flex-shrink-0 px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-lg transition-all ${
                 activeTab === tab.id
                   ? `bg-gradient-to-r ${tab.color} text-white shadow-xl`
-                  : 'bg-gray-800/60 backdrop-blur-sm text-tokyo-fg/60 hover:bg-gray-800'
+                  : 'bg-gray-800/60 backdrop-blur-sm text-mocha-text/60 hover:bg-gray-800'
               }`}
             >
-              <span className="text-2xl mr-2">{tab.emoji}</span>
-              <span>{tab.label}</span>
+              <span className="text-xl md:text-2xl mr-1 md:mr-2">{tab.emoji}</span>
+              <span className="whitespace-nowrap">{tab.label}</span>
             </motion.button>
           ))}
         </div>
@@ -184,67 +188,72 @@ function App() {
           >
             {activeTab === 'tasks' && (
               <div>
-                {/* Stats Bar */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                {/* Stats Bar - Mobile Optimized */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
                   {[
-                    { label: 'Total', value: stats.total, color: 'from-tokyo-blue to-blue-600', emoji: '📊' },
-                    { label: 'Completed', value: stats.completed, color: 'from-tokyo-green to-emerald-600', emoji: '✅' },
-                    { label: 'Pending', value: stats.pending, color: 'from-tokyo-yellow to-yellow-600', emoji: '⏳' },
-                    { label: 'Success', value: stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%', color: 'from-tokyo-magenta to-purple-600', emoji: '🎯' },
+                    { label: 'Total', value: stats.total, color: 'from-mocha-blue to-blue-600', emoji: '📊' },
+                    { label: 'Completed', value: stats.completed, color: 'from-mocha-green to-emerald-600', emoji: '✅' },
+                    { label: 'Pending', value: stats.pending, color: 'from-mocha-yellow to-yellow-600', emoji: '⏳' },
+                    { label: 'Success', value: stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%', color: 'from-mocha-mauve to-purple-600', emoji: '🎯' },
                   ].map((stat) => (
                     <motion.div
                       key={stat.label}
                       whileHover={{ scale: 1.05, rotate: 2 }}
-                      className={`bg-gradient-to-br ${stat.color} p-6 rounded-2xl shadow-xl text-white`}
+                      whileTap={{ scale: 0.95 }}
+                      className={`bg-gradient-to-br ${stat.color} p-4 md:p-6 rounded-xl md:rounded-2xl shadow-xl text-white touch-manipulation`}
                     >
-                      <div className="text-3xl mb-2">{stat.emoji}</div>
-                      <div className="text-4xl font-black">{stat.value}</div>
-                      <div className="text-sm opacity-90 mt-1">{stat.label}</div>
+                      <div className="text-2xl md:text-3xl mb-1 md:mb-2">{stat.emoji}</div>
+                      <div className="text-3xl md:text-4xl font-black leading-none">{stat.value}</div>
+                      <div className="text-xs md:text-sm opacity-90 mt-1">{stat.label}</div>
                     </motion.div>
                   ))}
                 </div>
 
-                {/* Filter Tabs */}
-                <div className="bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-xl p-3 mb-6 flex flex-wrap gap-2">
-                  {[
-                    { value: 'all', label: '📋 All Tasks', count: stats.total },
-                    { value: 'pending', label: '⚡ Active', count: stats.pending },
-                    { value: 'completed', label: '✅ Done', count: stats.completed },
-                    { value: 'daily', label: '📅 Daily', count: stats.daily },
-                    { value: 'weekly', label: '📆 Weekly', count: stats.weekly },
-                    { value: 'long_term', label: '🎯 Long Term', count: stats.longTerm },
-                    { value: 'gym_workout', label: '💪 Gym', count: stats.gym },
-                  ].map((tab) => (
-                    <motion.button
-                      key={tab.value}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setFilter(tab.value as FilterType)}
-                      className={`px-4 py-2.5 rounded-xl font-bold transition-all text-sm ${
-                        filter === tab.value
-                          ? 'bg-gradient-to-r from-tokyo-blue to-tokyo-cyan text-white shadow-lg'
-                          : 'bg-gray-800 text-tokyo-fg/60 hover:bg-gray-700'
-                      }`}
-                    >
-                      {tab.label} <span className="opacity-70">({tab.count})</span>
-                    </motion.button>
-                  ))}
+                {/* Filter Tabs - Mobile Optimized */}
+                <div className="bg-gray-900/80 backdrop-blur-md rounded-xl md:rounded-2xl shadow-xl p-2 md:p-3 mb-4 md:mb-6 overflow-x-auto -mx-3 md:mx-0 px-3 md:px-0">
+                  <div className="flex md:flex-wrap gap-1.5 md:gap-2 min-w-max md:min-w-0">
+                    {[
+                      { value: 'all', label: '📋 All', fullLabel: '📋 All Tasks', count: stats.total },
+                      { value: 'pending', label: '⚡', fullLabel: '⚡ Active', count: stats.pending },
+                      { value: 'completed', label: '✅', fullLabel: '✅ Done', count: stats.completed },
+                      { value: 'daily', label: '📅', fullLabel: '📅 Daily', count: stats.daily },
+                      { value: 'weekly', label: '📆', fullLabel: '📆 Weekly', count: stats.weekly },
+                      { value: 'long_term', label: '🎯', fullLabel: '🎯 Long Term', count: stats.longTerm },
+                      { value: 'gym_workout', label: '💪', fullLabel: '💪 Gym', count: stats.gym },
+                    ].map((tab) => (
+                      <motion.button
+                        key={tab.value}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setFilter(tab.value as FilterType)}
+                        className={`flex-shrink-0 px-3 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold transition-all text-xs md:text-sm touch-manipulation ${
+                          filter === tab.value
+                            ? 'bg-gradient-to-r from-mocha-blue to-mocha-sapphire text-white shadow-lg'
+                            : 'bg-gray-800 text-mocha-text/60 hover:bg-gray-700'
+                        }`}
+                      >
+                        <span className="md:hidden">{tab.label}</span>
+                        <span className="hidden md:inline">{tab.fullLabel}</span>
+                        <span className="opacity-70 ml-1">({tab.count})</span>
+                      </motion.button>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Add Task Button / Form */}
+                {/* Add Task Button / Form - Mobile Optimized */}
                 {!showForm ? (
                   <motion.button
                     whileHover={{ scale: 1.02, y: -3 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setShowForm(true)}
-                    className="w-full mb-6 px-6 py-6 bg-gradient-to-r from-tokyo-blue to-tokyo-magenta
-                             text-white font-black text-xl rounded-2xl shadow-2xl hover:shadow-tokyo-blue/50
-                             transition-all"
+                    className="w-full mb-4 md:mb-6 px-4 md:px-6 py-4 md:py-6 bg-gradient-to-r from-mocha-blue to-mocha-mauve
+                             text-white font-black text-lg md:text-xl rounded-xl md:rounded-2xl shadow-2xl hover:shadow-mocha-blue/50
+                             transition-all touch-manipulation"
                   >
                     ✨ Add New Task ✨
                   </motion.button>
                 ) : (
-                  <div className="mb-6">
+                  <div className="mb-4 md:mb-6">
                     <TaskForm
                       onSubmit={handleCreateTask}
                       onCancel={() => setShowForm(false)}
@@ -258,9 +267,9 @@ function App() {
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                      className="inline-block w-16 h-16 border-4 border-tokyo-blue border-t-transparent rounded-full"
+                      className="inline-block w-16 h-16 border-4 border-mocha-blue border-t-transparent rounded-full"
                     />
-                    <p className="mt-4 text-tokyo-fg/80 font-semibold">Loading tasks...</p>
+                    <p className="mt-4 text-mocha-text/80 font-semibold">Loading tasks...</p>
                   </div>
                 ) : (
                   <TaskList

@@ -86,7 +86,7 @@ export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }:
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ delay: 0.3 }}
-                className={`relative bg-white rounded-2xl px-6 py-4 shadow-2xl max-w-xs ${
+                className={`relative bg-mocha-surface0 border-2 border-mocha-blue/50 rounded-2xl px-6 py-4 shadow-2xl max-w-xs ${
                   entryDirection === 'right' ? 'order-first' : ''
                 }`}
               >
@@ -95,13 +95,13 @@ export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }:
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="text-gray-800 font-semibold text-lg"
+                  className="text-mocha-text font-semibold text-lg"
                 >
                   {currentMessage}
                 </motion.p>
 
                 {/* Speech bubble tail */}
-                <div className={`absolute bottom-4 w-4 h-4 bg-white transform rotate-45 ${
+                <div className={`absolute bottom-4 w-4 h-4 bg-mocha-surface0 border-l-2 border-b-2 border-mocha-blue/50 transform rotate-45 ${
                   entryDirection === 'right' ? '-left-2' : '-right-2'
                 }`} />
               </motion.div>

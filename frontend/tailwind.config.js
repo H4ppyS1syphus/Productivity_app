@@ -26,19 +26,34 @@ export default {
           blue: '#7aa2f7',
           cyan: '#7dcfff',
         },
-        tokyo: {
-          bg: '#1a1b26',
-          bgDark: '#16161e',
-          fg: '#c0caf5',
-          blue: '#7aa2f7',
-          cyan: '#7dcfff',
-          green: '#9ece6a',
-          magenta: '#bb9af7',
-          orange: '#ff9e64',
-          purple: '#9d7cd8',
-          red: '#f7768e',
-          teal: '#1abc9c',
-          yellow: '#e0af68',
+        // Catppuccin Mocha - EXACT colors from YOUR KDE theme!
+        mocha: {
+          base: '#1e1e2e',       // Main background
+          mantle: '#181825',     // Darker background
+          crust: '#11111b',      // Darkest background
+          surface0: '#313244',
+          surface1: '#45475a',   // Button background
+          surface2: '#585b70',
+          text: '#cdd6f4',       // Main text
+          subtext1: '#bac2de',   // Secondary text
+          subtext0: '#a6adc8',
+          overlay2: '#9399b2',
+          overlay1: '#7f849c',
+          overlay0: '#6c7086',
+          blue: '#89b4fa',       // Links, blue accent
+          sapphire: '#74c7ec',   // Cyan/active elements
+          sky: '#89dceb',
+          teal: '#94e2d5',
+          green: '#a6e3a1',      // Success/positive
+          yellow: '#f9e2af',     // Warnings/neutral
+          peach: '#fab387',
+          maroon: '#eba0ac',
+          red: '#f38ba8',        // Errors/negative
+          mauve: '#cba6f7',      // Purple/focus
+          pink: '#f5c2e7',
+          flamingo: '#f2cdcd',
+          rosewater: '#f5e0dc',
+          lavender: '#b4befe',
         },
         // Keep existing color system
         border: "hsl(var(--border))",

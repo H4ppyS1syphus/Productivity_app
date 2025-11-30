@@ -13,9 +13,9 @@ export default defineConfig({
       manifest: {
         name: 'Productivity App',
         short_name: 'ProductivityApp',
-        description: 'Personal productivity app with task management, streaks, and more',
-        theme_color: '#4F46E5',
-        background_color: '#ffffff',
+        description: 'Personal productivity app with task management, streaks, and more - がんばって！',
+        theme_color: '#1e1e2e',
+        background_color: '#1e1e2e',
         display: 'standalone',
         orientation: 'portrait',
         icons: [

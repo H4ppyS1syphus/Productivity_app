@@ -25,10 +25,10 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="text-center py-16 bg-white/10 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20"
+        className="text-center py-16 bg-mocha-surface0/80 backdrop-blur-sm rounded-2xl shadow-xl border border-mocha-surface2/50"
       >
         <div className="text-6xl mb-4">🌸</div>
-        <p className="text-white/80 text-xl font-semibold">
+        <p className="text-mocha-subtext1 text-xl font-semibold">
           No tasks found. Create one to get started!
         </p>
         <p className="text-white/60 mt-2">がんばって！ (Ganbatte!)</p>
@@ -39,13 +39,13 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
   const getTaskTypeColor = (type: Task['type']) => {
     switch (type) {
       case 'daily':
-        return 'bg-gradient-to-r from-neon-blue to-neon-cyan text-white'
+        return 'bg-gradient-to-r from-mocha-blue to-mocha-sapphire text-white'
       case 'weekly':
-        return 'bg-gradient-to-r from-neon-purple to-purple-600 text-white'
+        return 'bg-gradient-to-r from-mocha-mauve to-mocha-pink text-white'
       case 'long_term':
-        return 'bg-gradient-to-r from-green-400 to-emerald-500 text-white'
+        return 'bg-gradient-to-r from-mocha-green to-mocha-teal text-white'
       case 'gym_workout':
-        return 'bg-gradient-to-r from-orange-500 to-red-500 text-white'
+        return 'bg-gradient-to-r from-mocha-peach to-mocha-maroon text-white'
     }
   }
 
@@ -57,7 +57,7 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
       <span className={`text-xs px-2 py-1 rounded-lg font-semibold ${
         isOverdue
           ? 'bg-red-500/20 text-red-300 border border-red-500/50'
-          : 'bg-white/10 text-white/70'
+          : 'bg-mocha-surface0/80 text-mocha-subtext0'
       }`}>
         {isOverdue ? '⚠️ Overdue: ' : '📅 Due: '}
         {formatDistanceToNow(date, { addSuffix: true })}
@@ -74,9 +74,9 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.05 }}
           whileHover={{ scale: 1.02, y: -5 }}
-          className="bg-white/10 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl
-                   transition-all duration-300 p-6 flex items-start gap-4 border border-white/20
-                   hover:border-neon-pink/50 group"
+          className="bg-mocha-surface0/80 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl
+                   transition-all duration-300 p-6 flex items-start gap-4 border border-mocha-surface2/50
+                   hover:border-mocha-pink/50 group"
         >
           {/* Checkbox */}
           <motion.button
@@ -86,8 +86,8 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
           >
             <div className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all
                         ${task.status === 'completed'
-                          ? 'bg-gradient-to-br from-green-400 to-emerald-500 border-green-400 shadow-lg shadow-green-500/50'
-                          : 'border-white/30 hover:border-neon-pink hover:bg-white/10'}`}
+                          ? 'bg-gradient-to-br from-mocha-green to-mocha-teal border-mocha-green shadow-lg shadow-mocha-green/50'
+                          : 'border-mocha-blue/30 hover:border-mocha-pink hover:bg-mocha-surface0/80'}`}
             >
               {task.status === 'completed' && (
                 <motion.svg
@@ -107,13 +107,13 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
           {/* Task content */}
           <div className="flex-1 min-w-0">
             <h3 className={`font-bold text-xl ${task.status === 'completed'
-              ? 'line-through text-white/50'
+              ? 'line-through text-mocha-overlay1'
               : 'text-white'}`}
             >
               {task.title}
             </h3>
             {task.description && (
-              <p className="text-sm text-white/70 mt-2">
+              <p className="text-sm text-mocha-subtext0 mt-2">
                 {task.description}
               </p>
             )}
@@ -123,8 +123,8 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
               </span>
               {task.due_date && formatDueDate(task.due_date)}
               {task.pause_on_away && (
-                <span className="text-xs px-3 py-1.5 bg-white/10 border border-white/30
-                               text-white/80 rounded-lg font-semibold">
+                <span className="text-xs px-3 py-1.5 bg-mocha-surface0/80 border border-mocha-blue/30
+                               text-mocha-subtext1 rounded-lg font-semibold">
                   ✈️ Pauses when away
                 </span>
               )}
@@ -133,7 +133,7 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-xs px-3 py-1.5 bg-green-500/20 text-green-300 mt-3 inline-block rounded-lg font-semibold border border-green-500/50"
+                className="text-xs px-3 py-1.5 bg-mocha-green/20 text-mocha-green mt-3 inline-block rounded-lg font-semibold border border-mocha-green/50"
               >
                 ✓ Completed {formatDistanceToNow(new Date(task.completed_at), { addSuffix: true })}
               </motion.p>
@@ -157,7 +157,7 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
                       onDelete(task.id)
                       setDeleteConfirm(null)
                     }}
-                    className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg
+                    className="px-3 py-1.5 bg-mocha-red hover:bg-mocha-maroon text-white text-xs font-bold rounded-lg
                              transition-colors"
                   >
                     Delete
@@ -166,7 +166,7 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setDeleteConfirm(null)}
-                    className="px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white text-xs font-bold rounded-lg
+                    className="px-3 py-1.5 bg-mocha-surface1/60 hover:bg-white/30 text-white text-xs font-bold rounded-lg
                              transition-colors"
                   >
                     Cancel

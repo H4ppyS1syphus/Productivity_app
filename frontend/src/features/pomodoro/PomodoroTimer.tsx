@@ -35,7 +35,7 @@ export function PomodoroTimer() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="mb-6 p-4 bg-gray-800 border border-gray-700 rounded-xl text-white text-center font-medium"
+            className="mb-6 p-4 bg-mocha-surface1/80 backdrop-blur-sm border border-mocha-blue/50 rounded-xl text-mocha-text text-center font-medium"
           >
             {message}
           </motion.div>
@@ -53,7 +53,7 @@ export function PomodoroTimer() {
               className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
                 mode === m
                   ? `bg-gradient-to-br ${mConfig.color} text-white shadow-lg`
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-750 hover:text-gray-300'
+                  : 'bg-mocha-surface1 text-mocha-subtext0 hover:bg-mocha-surface2 hover:text-mocha-text'
               }`}
             >
               <div className="text-lg mb-1">{mConfig.emoji}</div>

@@ -102,10 +102,10 @@ export function AwayMode() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="mb-6 p-4 bg-red-500/20 backdrop-blur-sm border border-red-500/50 text-white rounded-2xl flex items-center justify-between"
+            className="mb-6 p-4 bg-mocha-red/20 backdrop-blur-sm border border-mocha-red/50 text-white rounded-2xl flex items-center justify-between"
           >
             <span className="font-semibold">{error}</span>
-            <button onClick={() => setError(null)} className="text-white/80 hover:text-white text-2xl">
+            <button onClick={() => setError(null)} className="text-mocha-subtext1 hover:text-white text-2xl">
               ✕
             </button>
           </motion.div>
@@ -119,7 +119,7 @@ export function AwayMode() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="mb-6 p-6 bg-gradient-to-r from-neon-cyan via-neon-blue to-neon-purple rounded-2xl shadow-2xl"
+            className="mb-6 p-6 bg-gradient-to-r from-mocha-sapphire via-mocha-blue to-mocha-mauve rounded-2xl shadow-2xl"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -128,7 +128,7 @@ export function AwayMode() {
                 <p className="text-white/90 text-lg">
                   {formatDate(currentPeriod.start_date)} → {formatDate(currentPeriod.end_date)}
                 </p>
-                <p className="text-white/70 text-sm mt-2">
+                <p className="text-mocha-subtext0 text-sm mt-2">
                   Tasks with "Pause on Away" enabled are paused 💤
                 </p>
               </div>
@@ -136,7 +136,7 @@ export function AwayMode() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleEndPeriod(currentPeriod.id)}
-                className="px-6 py-3 bg-white/20 backdrop-blur-sm rounded-xl text-white font-bold hover:bg-white/30 transition-colors"
+                className="px-6 py-3 bg-mocha-surface1/60 backdrop-blur-sm rounded-xl text-white font-bold hover:bg-mocha-surface2/50 transition-colors"
               >
                 End Early
               </motion.button>
@@ -151,8 +151,8 @@ export function AwayMode() {
           whileHover={{ scale: 1.02, y: -5 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setShowForm(true)}
-          className="w-full mb-6 px-6 py-6 bg-gradient-to-r from-neon-cyan to-neon-blue
-                   text-white font-black text-xl rounded-2xl shadow-2xl hover:shadow-neon-cyan/50
+          className="w-full mb-6 px-6 py-6 bg-gradient-to-r from-mocha-sapphire to-mocha-blue
+                   text-white font-black text-xl rounded-2xl shadow-2xl hover:shadow-mocha-sapphire/50
                    transition-all animate-glow"
         >
           ✈️ Plan Away Period
@@ -161,31 +161,31 @@ export function AwayMode() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-xl"
+          className="mb-6 bg-mocha-surface0/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl"
         >
           <h3 className="text-2xl font-bold text-white mb-4">New Away Period</h3>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-white/80 mb-2 font-semibold">Start Date</label>
+              <label className="block text-mocha-subtext1 mb-2 font-semibold">Start Date</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-neon-cyan"
+                className="w-full px-4 py-3 rounded-xl bg-mocha-surface1/60 text-white border border-mocha-blue/30 focus:outline-none focus:ring-2 focus:ring-mocha-sapphire"
               />
             </div>
             <div>
-              <label className="block text-white/80 mb-2 font-semibold">End Date</label>
+              <label className="block text-mocha-subtext1 mb-2 font-semibold">End Date</label>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-neon-cyan"
+                className="w-full px-4 py-3 rounded-xl bg-mocha-surface1/60 text-white border border-mocha-blue/30 focus:outline-none focus:ring-2 focus:ring-mocha-sapphire"
               />
             </div>
           </div>
-          <div className="bg-neon-blue/20 rounded-xl p-4 mb-4">
-            <p className="text-white/80 text-sm">
+          <div className="bg-mocha-blue/20 rounded-xl p-4 mb-4">
+            <p className="text-mocha-subtext1 text-sm">
               💡 <strong>Tip:</strong> Tasks marked with "Pause on Away" will not count toward your streaks during this period.
               Perfect for vacations and travel! 🌴
             </p>
@@ -195,7 +195,7 @@ export function AwayMode() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleCreatePeriod}
-              className="flex-1 py-3 bg-gradient-to-r from-neon-cyan to-neon-blue rounded-xl text-white font-bold shadow-lg hover:shadow-xl transition-shadow"
+              className="flex-1 py-3 bg-gradient-to-r from-mocha-sapphire to-mocha-blue rounded-xl text-white font-bold shadow-lg hover:shadow-xl transition-shadow"
             >
               Create Away Period ✈️
             </motion.button>
@@ -203,7 +203,7 @@ export function AwayMode() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowForm(false)}
-              className="px-6 py-3 bg-white/20 rounded-xl text-white font-semibold hover:bg-white/30 transition-colors"
+              className="px-6 py-3 bg-mocha-surface1/60 rounded-xl text-white font-semibold hover:bg-mocha-surface2/50 transition-colors"
             >
               Cancel
             </motion.button>
@@ -212,7 +212,7 @@ export function AwayMode() {
       )}
 
       {/* Away Periods List */}
-      <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-xl">
+      <div className="bg-mocha-surface0/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl">
         <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
           📅 Away Period History
         </h3>
@@ -222,15 +222,15 @@ export function AwayMode() {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="inline-block w-12 h-12 border-4 border-neon-cyan border-t-transparent rounded-full"
+              className="inline-block w-12 h-12 border-4 border-mocha-sapphire border-t-transparent rounded-full"
             />
-            <p className="mt-4 text-white/80 font-semibold">Loading...</p>
+            <p className="mt-4 text-mocha-subtext1 font-semibold">Loading...</p>
           </div>
         ) : awayPeriods.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🏠</div>
-            <p className="text-white/70 text-lg">No away periods yet</p>
-            <p className="text-white/50 text-sm mt-2">Plan your first trip or vacation!</p>
+            <p className="text-mocha-subtext0 text-lg">No away periods yet</p>
+            <p className="text-mocha-overlay1 text-sm mt-2">Plan your first trip or vacation!</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -242,8 +242,8 @@ export function AwayMode() {
                 transition={{ delay: index * 0.05 }}
                 className={`p-4 rounded-xl ${
                   period.is_active
-                    ? 'bg-gradient-to-r from-neon-cyan/20 to-neon-blue/20 border-2 border-neon-cyan/50'
-                    : 'bg-white/5 border border-white/10'
+                    ? 'bg-gradient-to-r from-mocha-sapphire/20 to-mocha-blue/20 border-2 border-mocha-sapphire/50'
+                    : 'bg-mocha-surface0/50 border border-mocha-surface1/30'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -251,7 +251,7 @@ export function AwayMode() {
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-2xl">{period.is_active ? '✈️' : '🏁'}</span>
                       <span className={`text-sm font-bold ${
-                        period.is_active ? 'text-neon-cyan' : 'text-white/50'
+                        period.is_active ? 'text-mocha-sapphire' : 'text-mocha-overlay1'
                       }`}>
                         {period.is_active ? 'ACTIVE' : 'COMPLETED'}
                       </span>
@@ -265,7 +265,7 @@ export function AwayMode() {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleDeletePeriod(period.id)}
-                      className="p-2 bg-red-500/20 rounded-lg text-red-300 hover:bg-red-500/30 transition-colors"
+                      className="p-2 bg-mocha-red/20 rounded-lg text-red-300 hover:bg-red-500/30 transition-colors"
                     >
                       🗑️
                     </motion.button>
