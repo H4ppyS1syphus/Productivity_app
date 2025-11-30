@@ -25,7 +25,6 @@ function App() {
 
   // Mock streak data (replace with actual API call later)
   const [currentStreak, setCurrentStreak] = useState(7)
-  const [longestStreak, setLongestStreak] = useState(30)
 
   // Load tasks on mount
   useEffect(() => {
