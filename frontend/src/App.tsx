@@ -95,17 +95,23 @@ function App() {
   }
 
   const tabs = [
-    { id: 'tasks' as TabType, label: 'Tasks', emoji: '✅', color: 'from-green-600 to-green-700' },
-    { id: 'streaks' as TabType, label: 'Streaks', emoji: '🔥', color: 'from-orange-600 to-orange-700' },
-    { id: 'pomodoro' as TabType, label: 'Focus', emoji: '⏱️', color: 'from-blue-600 to-blue-700' },
-    { id: 'gym' as TabType, label: 'Gym', emoji: '💪', color: 'from-purple-600 to-purple-700' },
-    { id: 'away' as TabType, label: 'Away', emoji: '✈️', color: 'from-cyan-600 to-cyan-700' },
+    { id: 'tasks' as TabType, label: 'Tasks', emoji: '✅', color: 'from-tokyo-green to-emerald-600' },
+    { id: 'streaks' as TabType, label: 'Streaks', emoji: '🔥', color: 'from-tokyo-orange to-orange-600' },
+    { id: 'pomodoro' as TabType, label: 'Focus', emoji: '⏱️', color: 'from-tokyo-blue to-blue-600' },
+    { id: 'gym' as TabType, label: 'Gym', emoji: '💪', color: 'from-tokyo-magenta to-purple-600' },
+    { id: 'away' as TabType, label: 'Away', emoji: '✈️', color: 'from-tokyo-cyan to-cyan-600' },
   ]
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen bg-gradient-to-br from-tokyo-bgDark via-tokyo-bg to-indigo-950">
       {/* Intro Animation */}
       <IntroAnimation />
+
+      {/* Subtle animated background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-tokyo-blue/20 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-tokyo-magenta/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+      </div>
 
       {/* Floating Timer (shows when not on pomodoro tab) */}
       {activeTab !== 'pomodoro' && (
@@ -115,17 +121,17 @@ function App() {
       {/* Capybara Mascot */}
       <CapybaraMascot />
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
         {/* Header */}
         <motion.header
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="text-center mb-10"
         >
-          <h1 className="text-5xl font-bold text-white mb-2">
+          <h1 className="text-6xl font-black bg-gradient-to-r from-tokyo-blue via-tokyo-magenta to-tokyo-cyan bg-clip-text text-transparent mb-3">
             Productivity App
           </h1>
-          <p className="text-gray-400 text-base">
+          <p className="text-tokyo-fg/70 text-lg font-medium">
             がんばって！ (Ganbatte!) - Let's do our best! 🌸
           </p>
         </motion.header>
@@ -137,10 +143,10 @@ function App() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-red-900/50 border border-red-700 text-white px-6 py-4 rounded-xl mb-6 flex items-center justify-between"
+              className="bg-tokyo-red/20 backdrop-blur-sm border border-tokyo-red/50 text-white px-6 py-4 rounded-2xl mb-6 flex items-center justify-between"
             >
-              <span className="font-medium">{error}</span>
-              <button onClick={() => setError(null)} className="text-white/80 hover:text-white text-xl">
+              <span className="font-semibold">{error}</span>
+              <button onClick={() => setError(null)} className="text-white/80 hover:text-white text-2xl">
                 ✕
               </button>
             </motion.div>
@@ -152,16 +158,16 @@ function App() {
           {tabs.map((tab) => (
             <motion.button
               key={tab.id}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+              className={`relative px-8 py-4 rounded-2xl font-bold text-lg transition-all ${
                 activeTab === tab.id
-                  ? `bg-gradient-to-br ${tab.color} text-white shadow-lg`
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-750 hover:text-gray-300'
+                  ? `bg-gradient-to-r ${tab.color} text-white shadow-xl`
+                  : 'bg-gray-800/60 backdrop-blur-sm text-tokyo-fg/60 hover:bg-gray-800'
               }`}
             >
-              <span className="text-xl mr-2">{tab.emoji}</span>
+              <span className="text-2xl mr-2">{tab.emoji}</span>
               <span>{tab.label}</span>
             </motion.button>
           ))}
@@ -181,25 +187,25 @@ function App() {
                 {/* Stats Bar */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                   {[
-                    { label: 'Total', value: stats.total, color: 'from-blue-600 to-blue-700', emoji: '📊' },
-                    { label: 'Completed', value: stats.completed, color: 'from-green-600 to-green-700', emoji: '✅' },
-                    { label: 'Pending', value: stats.pending, color: 'from-yellow-600 to-yellow-700', emoji: '⏳' },
-                    { label: 'Success', value: stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%', color: 'from-purple-600 to-purple-700', emoji: '🎯' },
+                    { label: 'Total', value: stats.total, color: 'from-tokyo-blue to-blue-600', emoji: '📊' },
+                    { label: 'Completed', value: stats.completed, color: 'from-tokyo-green to-emerald-600', emoji: '✅' },
+                    { label: 'Pending', value: stats.pending, color: 'from-tokyo-yellow to-yellow-600', emoji: '⏳' },
+                    { label: 'Success', value: stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%', color: 'from-tokyo-magenta to-purple-600', emoji: '🎯' },
                   ].map((stat) => (
                     <motion.div
                       key={stat.label}
-                      whileHover={{ scale: 1.03 }}
-                      className={`bg-gradient-to-br ${stat.color} p-5 rounded-xl shadow-lg text-white`}
+                      whileHover={{ scale: 1.05, rotate: 2 }}
+                      className={`bg-gradient-to-br ${stat.color} p-6 rounded-2xl shadow-xl text-white`}
                     >
-                      <div className="text-2xl mb-1">{stat.emoji}</div>
-                      <div className="text-3xl font-bold">{stat.value}</div>
-                      <div className="text-sm opacity-80 mt-0.5">{stat.label}</div>
+                      <div className="text-3xl mb-2">{stat.emoji}</div>
+                      <div className="text-4xl font-black">{stat.value}</div>
+                      <div className="text-sm opacity-90 mt-1">{stat.label}</div>
                     </motion.div>
                   ))}
                 </div>
 
                 {/* Filter Tabs */}
-                <div className="bg-gray-800 rounded-xl p-3 mb-6 flex flex-wrap gap-2">
+                <div className="bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-xl p-3 mb-6 flex flex-wrap gap-2">
                   {[
                     { value: 'all', label: '📋 All Tasks', count: stats.total },
                     { value: 'pending', label: '⚡ Active', count: stats.pending },
@@ -211,13 +217,13 @@ function App() {
                   ].map((tab) => (
                     <motion.button
                       key={tab.value}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setFilter(tab.value as FilterType)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all text-sm ${
+                      className={`px-4 py-2.5 rounded-xl font-bold transition-all text-sm ${
                         filter === tab.value
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-750 text-gray-400 hover:bg-gray-700 hover:text-gray-300'
+                          ? 'bg-gradient-to-r from-tokyo-blue to-tokyo-cyan text-white shadow-lg'
+                          : 'bg-gray-800 text-tokyo-fg/60 hover:bg-gray-700'
                       }`}
                     >
                       {tab.label} <span className="opacity-70">({tab.count})</span>
@@ -228,14 +234,14 @@ function App() {
                 {/* Add Task Button / Form */}
                 {!showForm ? (
                   <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ scale: 1.02, y: -3 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => setShowForm(true)}
-                    className="w-full mb-6 px-6 py-5 bg-gradient-to-r from-blue-600 to-blue-700
-                             text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl
+                    className="w-full mb-6 px-6 py-6 bg-gradient-to-r from-tokyo-blue to-tokyo-magenta
+                             text-white font-black text-xl rounded-2xl shadow-2xl hover:shadow-tokyo-blue/50
                              transition-all"
                   >
-                    ✨ Add New Task
+                    ✨ Add New Task ✨
                   </motion.button>
                 ) : (
                   <div className="mb-6">
@@ -252,9 +258,9 @@ function App() {
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                      className="inline-block w-12 h-12 border-3 border-blue-600 border-t-transparent rounded-full"
+                      className="inline-block w-16 h-16 border-4 border-tokyo-blue border-t-transparent rounded-full"
                     />
-                    <p className="mt-4 text-gray-400 font-medium">Loading tasks...</p>
+                    <p className="mt-4 text-tokyo-fg/80 font-semibold">Loading tasks...</p>
                   </div>
                 ) : (
                   <TaskList

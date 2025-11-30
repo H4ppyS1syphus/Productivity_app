@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Anime-inspired pink/purple theme
+        // Tokyo Night / Catppuccin inspired theme
         sakura: {
           50: '#fef1f7',
           100: '#fee5f0',
@@ -23,8 +23,22 @@ export default {
         neon: {
           pink: '#ff3cc7',
           purple: '#a855f7',
-          blue: '#3b82f6',
-          cyan: '#06b6d4',
+          blue: '#7aa2f7',
+          cyan: '#7dcfff',
+        },
+        tokyo: {
+          bg: '#1a1b26',
+          bgDark: '#16161e',
+          fg: '#c0caf5',
+          blue: '#7aa2f7',
+          cyan: '#7dcfff',
+          green: '#9ece6a',
+          magenta: '#bb9af7',
+          orange: '#ff9e64',
+          purple: '#9d7cd8',
+          red: '#f7768e',
+          teal: '#1abc9c',
+          yellow: '#e0af68',
         },
         // Keep existing color system
         border: "hsl(var(--border))",
