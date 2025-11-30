@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { api, type Task, type TaskCreate } from './services/api'
 import { TaskForm } from './features/tasks/TaskForm'
 import { TaskList } from './features/tasks/TaskList'
+import { StreakDisplay } from './features/streaks/StreakDisplay'
+import { PomodoroTimer } from './features/pomodoro/PomodoroTimer'
+import { GymTracker } from './features/gym/GymTracker'
 
 type FilterType = 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
+type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym'
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -11,6 +16,11 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [filter, setFilter] = useState<FilterType>('all')
+  const [activeTab, setActiveTab] = useState<TabType>('tasks')
+
+  // Mock streak data (replace with actual API call later)
+  const [currentStreak, setCurrentStreak] = useState(7)
+  const [longestStreak, setLongestStreak] = useState(30)
 
   // Load tasks on mount
   useEffect(() => {
@@ -49,6 +59,11 @@ function App() {
         : await api.completeTask(task.id)
 
       setTasks(tasks.map(t => t.id === task.id ? updatedTask : t))
+
+      // Increment streak on task completion
+      if (updatedTask.status === 'completed') {
+        setCurrentStreak(s => s + 1)
+      }
     } catch (err) {
       setError('Failed to update task')
       console.error('Error updating task:', err)
@@ -77,109 +92,191 @@ function App() {
     gym: tasks.filter(t => t.type === 'gym_workout').length,
   }
 
+  const tabs = [
+    { id: 'tasks' as TabType, label: 'Tasks', emoji: '✅', color: 'from-sakura-400 to-sakura-600' },
+    { id: 'streaks' as TabType, label: 'Streaks', emoji: '🔥', color: 'from-orange-500 to-red-500' },
+    { id: 'pomodoro' as TabType, label: 'Focus', emoji: '⏱️', color: 'from-neon-cyan to-neon-blue' },
+    { id: 'gym' as TabType, label: 'Gym', emoji: '💪', color: 'from-neon-purple to-purple-600' },
+  ]
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900">
+      {/* Animated background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-pink/20 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neon-purple/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+      </div>
+
+      <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
         {/* Header */}
-        <header className="text-center mb-8">
-          <h1 className="text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        <motion.header
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="text-center mb-8"
+        >
+          <h1 className="text-7xl font-black bg-gradient-to-r from-neon-pink via-sakura-400 to-neon-purple bg-clip-text text-transparent mb-2 animate-shimmer" style={{ backgroundSize: '200% auto' }}>
             Productivity App
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Your personal task & habit tracker
+          <p className="text-white/70 text-lg font-medium">
+            がんばって！ (Ganbatte!) - Let's do our best! 🌸
           </p>
-        </header>
+        </motion.header>
 
         {/* Error message */}
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center justify-between">
-            <span>{error}</span>
-            <button onClick={() => setError(null)} className="text-red-700 hover:text-red-900">
-              ✕
-            </button>
-          </div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="bg-red-500/20 backdrop-blur-sm border border-red-500/50 text-white px-6 py-4 rounded-2xl mb-6 flex items-center justify-between"
+            >
+              <span className="font-semibold">{error}</span>
+              <button onClick={() => setError(null)} className="text-white/80 hover:text-white text-2xl">
+                ✕
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-blue-600">{stats.total}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Total Tasks</div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-green-600">{stats.completed}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Completed</div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-orange-600">{stats.pending}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Pending</div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-center">
-            <div className="text-3xl font-bold text-purple-600">
-              {stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Complete Rate</div>
-          </div>
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-2 mb-6 flex flex-wrap gap-2">
-          {[
-            { value: 'all', label: 'All', count: stats.total },
-            { value: 'daily', label: 'Daily', count: stats.daily },
-            { value: 'weekly', label: 'Weekly', count: stats.weekly },
-            { value: 'long_term', label: 'Long Term', count: stats.longTerm },
-            { value: 'gym_workout', label: 'Gym', count: stats.gym },
-            { value: 'pending', label: 'Pending', count: stats.pending },
-            { value: 'completed', label: 'Completed', count: stats.completed },
-          ].map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => setFilter(tab.value as FilterType)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                filter === tab.value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+        {/* Navigation Tabs */}
+        <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
+          {tabs.map((tab) => (
+            <motion.button
+              key={tab.id}
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative px-8 py-4 rounded-2xl font-bold text-lg transition-all ${
+                activeTab === tab.id
+                  ? `bg-gradient-to-r ${tab.color} text-white shadow-2xl`
+                  : 'bg-white/10 backdrop-blur-sm text-white/60 hover:bg-white/20'
               }`}
             >
-              {tab.label} ({tab.count})
-            </button>
+              <span className="text-2xl mr-2">{tab.emoji}</span>
+              {tab.label}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute inset-0 rounded-2xl animate-glow pointer-events-none"
+                />
+              )}
+            </motion.button>
           ))}
         </div>
 
-        {/* Add Task Button / Form */}
-        {!showForm ? (
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-full mb-6 px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600
-                     hover:from-blue-700 hover:to-purple-700 text-white font-bold text-lg
-                     rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+        {/* Tab Content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
           >
-            + Add New Task
-          </button>
-        ) : (
-          <div className="mb-6">
-            <TaskForm
-              onSubmit={handleCreateTask}
-              onCancel={() => setShowForm(false)}
-            />
-          </div>
-        )}
+            {activeTab === 'tasks' && (
+              <div>
+                {/* Stats Bar */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                  {[
+                    { label: 'Total', value: stats.total, color: 'from-neon-blue to-neon-cyan', emoji: '📊' },
+                    { label: 'Completed', value: stats.completed, color: 'from-green-500 to-emerald-500', emoji: '✅' },
+                    { label: 'Pending', value: stats.pending, color: 'from-orange-500 to-yellow-500', emoji: '⏳' },
+                    { label: 'Success', value: stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%', color: 'from-neon-purple to-neon-pink', emoji: '🎯' },
+                  ].map((stat) => (
+                    <motion.div
+                      key={stat.label}
+                      whileHover={{ scale: 1.05, rotate: 2 }}
+                      className={`bg-gradient-to-br ${stat.color} p-6 rounded-2xl shadow-xl text-white`}
+                    >
+                      <div className="text-3xl mb-2">{stat.emoji}</div>
+                      <div className="text-4xl font-black">{stat.value}</div>
+                      <div className="text-sm opacity-80 mt-1">{stat.label}</div>
+                    </motion.div>
+                  ))}
+                </div>
 
-        {/* Task List */}
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading tasks...</p>
-          </div>
-        ) : (
-          <TaskList
-            tasks={tasks}
-            onToggleComplete={handleToggleComplete}
-            onDelete={handleDeleteTask}
-            filter={filter}
-          />
-        )}
+                {/* Filter Tabs */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl shadow-xl p-3 mb-6 flex flex-wrap gap-2">
+                  {[
+                    { value: 'all', label: 'All', count: stats.total },
+                    { value: 'daily', label: 'Daily', count: stats.daily },
+                    { value: 'weekly', label: 'Weekly', count: stats.weekly },
+                    { value: 'long_term', label: 'Long Term', count: stats.longTerm },
+                    { value: 'gym_workout', label: 'Gym', count: stats.gym },
+                    { value: 'pending', label: 'Pending', count: stats.pending },
+                    { value: 'completed', label: 'Completed', count: stats.completed },
+                  ].map((tab) => (
+                    <motion.button
+                      key={tab.value}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setFilter(tab.value as FilterType)}
+                      className={`px-6 py-3 rounded-xl font-bold transition-all ${
+                        filter === tab.value
+                          ? 'bg-gradient-to-r from-neon-pink to-neon-purple text-white shadow-lg'
+                          : 'bg-white/10 text-white/60 hover:bg-white/20'
+                      }`}
+                    >
+                      {tab.label} ({tab.count})
+                    </motion.button>
+                  ))}
+                </div>
+
+                {/* Add Task Button / Form */}
+                {!showForm ? (
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -5 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowForm(true)}
+                    className="w-full mb-6 px-6 py-6 bg-gradient-to-r from-neon-pink to-neon-purple
+                             text-white font-black text-xl rounded-2xl shadow-2xl hover:shadow-neon-pink/50
+                             transition-all animate-glow"
+                  >
+                    ✨ Add New Task ✨
+                  </motion.button>
+                ) : (
+                  <div className="mb-6">
+                    <TaskForm
+                      onSubmit={handleCreateTask}
+                      onCancel={() => setShowForm(false)}
+                    />
+                  </div>
+                )}
+
+                {/* Task List */}
+                {loading ? (
+                  <div className="text-center py-12">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      className="inline-block w-16 h-16 border-4 border-neon-pink border-t-transparent rounded-full"
+                    />
+                    <p className="mt-4 text-white/80 font-semibold">Loading tasks...</p>
+                  </div>
+                ) : (
+                  <TaskList
+                    tasks={tasks}
+                    onToggleComplete={handleToggleComplete}
+                    onDelete={handleDeleteTask}
+                    filter={filter}
+                  />
+                )}
+              </div>
+            )}
+
+            {activeTab === 'streaks' && (
+              <StreakDisplay
+                currentStreak={currentStreak}
+                longestStreak={longestStreak}
+              />
+            )}
+
+            {activeTab === 'pomodoro' && <PomodoroTimer />}
+
+            {activeTab === 'gym' && <GymTracker />}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   )
