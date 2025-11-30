@@ -6,38 +6,36 @@ export function IntroAnimation() {
   const [stage, setStage] = useState(0)
 
   useEffect(() => {
-    // Check if intro has been shown before
-    const hasSeenIntro = localStorage.getItem('hasSeenIntro')
+    // Show intro on every page load!
+    setShow(true)
 
-    if (!hasSeenIntro) {
-      setShow(true)
+    // Much faster, JoJo-style pacing with CAPYBARA!
+    // Stage 1: Power up (0-0.8s)
+    const stage1 = setTimeout(() => setStage(1), 200)
 
-      // Stage 1: Power up (0-2s)
-      const stage1 = setTimeout(() => setStage(1), 500)
+    // Stage 2: Capybara vs Procrastination (0.8-1.8s)
+    const stage2 = setTimeout(() => setStage(2), 800)
 
-      // Stage 2: Attack (2-3s)
-      const stage2 = setTimeout(() => setStage(2), 2000)
+    // Stage 3: MENACING (1.8-2.5s)
+    const stage3 = setTimeout(() => setStage(3), 1800)
 
-      // Stage 3: Impact (3-4s)
-      const stage3 = setTimeout(() => setStage(3), 3000)
+    // Stage 4: ORA ORA Impact (2.5-3.5s)
+    const stage4 = setTimeout(() => setStage(4), 2500)
 
-      // Stage 4: Fade out (4-5s)
-      const stage4 = setTimeout(() => {
-        setStage(4)
-        localStorage.setItem('hasSeenIntro', 'true')
-      }, 4000)
+    // Stage 5: Fade out (3.5-4.8s)
+    const stage5 = setTimeout(() => setStage(5), 3500)
 
-      const hideTimeout = setTimeout(() => {
-        setShow(false)
-      }, 5500)
+    const hideTimeout = setTimeout(() => {
+      setShow(false)
+    }, 4800)
 
-      return () => {
-        clearTimeout(stage1)
-        clearTimeout(stage2)
-        clearTimeout(stage3)
-        clearTimeout(stage4)
-        clearTimeout(hideTimeout)
-      }
+    return () => {
+      clearTimeout(stage1)
+      clearTimeout(stage2)
+      clearTimeout(stage3)
+      clearTimeout(stage4)
+      clearTimeout(stage5)
+      clearTimeout(hideTimeout)
     }
   }, [])
 
@@ -51,32 +49,71 @@ export function IntroAnimation() {
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[9999] flex items-center justify-center bg-black overflow-hidden"
       >
-        {/* Background energy lines */}
+        {/* JoJo Speed Lines */}
         <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(40)].map((_, i) => (
             <motion.div
               key={i}
               initial={{ scaleX: 0, opacity: 0 }}
               animate={stage >= 1 ? {
-                scaleX: [0, 1, 1, 0],
-                opacity: [0, 1, 1, 0],
-                x: ['-50%', '0%', '0%', '50%']
+                scaleX: [0, 2],
+                opacity: [0, 1, 0],
+                x: ['-100%', '200%']
               } : {}}
               transition={{
-                duration: 2,
-                delay: i * 0.05,
-                repeat: stage >= 1 && stage < 4 ? Infinity : 0,
-                repeatDelay: 1
+                duration: 0.4,
+                delay: i * 0.02,
+                repeat: stage >= 1 && stage < 5 ? Infinity : 0,
+                repeatDelay: 0.5,
+                ease: "easeOut"
               }}
-              className="absolute h-px bg-gradient-to-r from-transparent via-neon-cyan to-transparent"
+              className={`absolute h-1 ${
+                i % 3 === 0 ? 'bg-gradient-to-r from-yellow-400 to-orange-600' :
+                i % 3 === 1 ? 'bg-gradient-to-r from-neon-pink to-purple-600' :
+                'bg-gradient-to-r from-neon-cyan to-blue-600'
+              }`}
               style={{
-                top: `${5 + i * 5}%`,
+                top: `${Math.random() * 100}%`,
                 width: '200%',
-                left: '-50%'
+                left: '-100%',
+                transform: `rotate(${-10 + Math.random() * 20}deg)`
               }}
             />
           ))}
         </div>
+
+        {/* MENACING effect (ゴゴゴゴ) */}
+        {stage >= 3 && stage < 5 && (
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={`menace-${i}`}
+                initial={{ opacity: 0, scale: 0, rotate: 0 }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  scale: [0.5, 1.5],
+                  rotate: [0, 15],
+                  x: [0, (i % 2 === 0 ? 50 : -50)],
+                  y: [0, (i % 2 === 0 ? -50 : 50)]
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: i * 0.05,
+                  repeat: Infinity,
+                  repeatDelay: 0.2
+                }}
+                className="absolute text-6xl font-black text-neon-purple"
+                style={{
+                  left: `${10 + (i % 4) * 25}%`,
+                  top: `${10 + Math.floor(i / 4) * 40}%`,
+                  textShadow: '0 0 20px #a855f7, 0 0 40px #ff3cc7'
+                }}
+              >
+                ゴ
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* Center stage */}
         <div className="relative z-10">
@@ -84,103 +121,278 @@ export function IntroAnimation() {
           {stage >= 1 && stage < 2 && (
             <>
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: [0, 2, 1] }}
-                transition={{ duration: 0.8 }}
-                className="text-9xl text-center mb-8 filter drop-shadow-2xl"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{
+                  scale: [0, 3, 1.5],
+                  rotate: [- 180, 0, 0]
+                }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="text-9xl text-center mb-8"
+                style={{
+                  filter: 'drop-shadow(0 0 30px #ffff00) drop-shadow(0 0 60px #ff6600)',
+                  textShadow: '0 0 40px #ffff00'
+                }}
               >
                 ⚡
               </motion.div>
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
                 className="text-center"
               >
-                <div className="text-6xl font-black bg-gradient-to-r from-neon-cyan via-neon-blue to-neon-purple
-                             bg-clip-text text-transparent animate-shimmer"
-                     style={{ backgroundSize: '200% auto' }}>
-                  POWER UP
-                </div>
                 <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 0.5, repeat: Infinity }}
-                  className="text-white/60 mt-4 text-2xl tracking-widest"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    textShadow: [
+                      '0 0 20px #06b6d4',
+                      '0 0 60px #06b6d4, 0 0 80px #3b82f6',
+                      '0 0 20px #06b6d4'
+                    ]
+                  }}
+                  transition={{ duration: 0.3, repeat: Infinity }}
+                  className="text-7xl font-black text-white"
                 >
-                  準備中... (Preparing...)
+                  準備！
                 </motion.div>
               </motion.div>
             </>
           )}
 
-          {/* Stage 2: Attack Animation */}
+          {/* Stage 2: Capybara vs Procrastination! */}
           {stage >= 2 && stage < 3 && (
             <>
+              <div className="flex items-center justify-center gap-16">
+                {/* Capybara on left - fighting! */}
+                <motion.div
+                  initial={{ x: -500, rotate: -90 }}
+                  animate={{
+                    x: [-500, -50, 0],
+                    rotate: [-90, 0, 0],
+                    scale: [0.5, 1.2, 1]
+                  }}
+                  transition={{ duration: 0.5, ease: "backOut" }}
+                  className="relative"
+                >
+                  <motion.div
+                    animate={{
+                      y: [0, -20, 0],
+                      rotate: [0, -15, 15, -15, 0]
+                    }}
+                    transition={{ duration: 0.4, repeat: 2 }}
+                    className="text-9xl filter drop-shadow-2xl"
+                  >
+                    🦫
+                  </motion.div>
+                  {/* Punching effect */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 0 }}
+                    animate={{
+                      opacity: [0, 1, 0],
+                      x: [0, 50, 100],
+                      scale: [1, 1.5, 2]
+                    }}
+                    transition={{ duration: 0.3, delay: 0.5 }}
+                    className="absolute top-1/2 left-full text-6xl"
+                  >
+                    👊💥
+                  </motion.div>
+                  {/* Weights */}
+                  <motion.div
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{ y: [100, 0, -10, 0], opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-5xl"
+                  >
+                    🏋️
+                  </motion.div>
+                </motion.div>
+
+                {/* VS text */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{
+                    scale: [0, 1.5, 1],
+                    rotate: [0, 360]
+                  }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                  className="text-7xl font-black text-yellow-400"
+                  style={{
+                    textShadow: '0 0 40px #ff6600, 0 0 80px #ffff00',
+                    WebkitTextStroke: '3px #000'
+                  }}
+                >
+                  VS
+                </motion.div>
+
+                {/* Procrastination on right - getting defeated! */}
+                <motion.div
+                  initial={{ x: 500 }}
+                  animate={{
+                    x: [500, 50, 100],
+                    rotate: [0, 0, 45],
+                    opacity: [1, 1, 0.3]
+                  }}
+                  transition={{ duration: 0.7 }}
+                  className="relative"
+                >
+                  <motion.div
+                    animate={{
+                      scale: [1, 0.9, 0.7],
+                      rotate: [0, 15, 30]
+                    }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="text-9xl filter drop-shadow-2xl opacity-70"
+                  >
+                    😴
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ duration: 0.3, delay: 0.5 }}
+                    className="absolute top-0 left-0 text-6xl"
+                  >
+                    💢
+                  </motion.div>
+                </motion.div>
+              </div>
+
               <motion.div
-                initial={{ x: -1000, rotate: -180 }}
-                animate={{ x: 0, rotate: 0 }}
-                transition={{ type: 'spring', stiffness: 100 }}
-                className="text-9xl text-center filter drop-shadow-2xl"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="text-center mt-12"
               >
-                👊
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center mt-8"
-              >
-                <div className="text-6xl font-black bg-gradient-to-r from-neon-pink via-sakura-400 to-neon-purple
-                             bg-clip-text text-transparent animate-pulse">
-                  ATTACK!
+                <div className="text-5xl font-black bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                  CAPYBARA POWER!
                 </div>
               </motion.div>
             </>
           )}
 
-          {/* Stage 3: Impact */}
+          {/* Stage 3: MENACING / TIME FREEZE */}
           {stage >= 3 && stage < 4 && (
             <>
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{
-                  scale: [0, 3, 2],
-                  rotate: [0, 180, 360]
+                  scale: [0, 2, 1.8],
+                  rotate: [0, 360]
                 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.4, ease: "backOut" }}
+                className="text-[12rem] text-center"
+                style={{
+                  filter: 'drop-shadow(0 0 40px #a855f7) drop-shadow(0 0 80px #ff3cc7)'
+                }}
+              >
+                🌟
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                <div className="text-[20rem] opacity-20">💥</div>
+                <motion.div
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 5, -5, 0]
+                  }}
+                  transition={{ duration: 0.2, repeat: Infinity }}
+                  className="text-8xl font-black"
+                  style={{
+                    background: 'linear-gradient(45deg, #ff3cc7, #a855f7, #ff3cc7)',
+                    backgroundSize: '200% 200%',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    textShadow: '0 0 80px rgba(255, 60, 199, 0.8)'
+                  }}
+                >
+                  ZA WARUDO!
+                </motion.div>
               </motion.div>
+            </>
+          )}
+
+          {/* Stage 4: ORA ORA Impact */}
+          {stage >= 4 && stage < 5 && (
+            <>
+              {/* Multiple impact flashes */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{
+                  scale: [0, 4, 2.5],
+                  rotate: [0, 180, 360],
+                  opacity: [1, 0.5, 0.8]
+                }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 flex items-center justify-center"
+              >
+                <div className="text-[25rem] opacity-30">💥</div>
+              </motion.div>
+
+              {/* ORA ORA ORA text */}
+              <div className="absolute inset-0">
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={`ora-${i}`}
+                    initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                    animate={{
+                      opacity: [0, 1, 0],
+                      scale: [0.5, 2, 3],
+                      x: [0, (Math.random() - 0.5) * 300],
+                      y: [0, (Math.random() - 0.5) * 300],
+                      rotate: [0, Math.random() * 360]
+                    }}
+                    transition={{
+                      duration: 0.6,
+                      delay: i * 0.1,
+                      ease: "easeOut"
+                    }}
+                    className="absolute top-1/2 left-1/2 text-7xl font-black text-yellow-400"
+                    style={{
+                      textShadow: '0 0 40px #ff6600, 0 0 80px #ffff00',
+                      WebkitTextStroke: '2px #ff3cc7'
+                    }}
+                  >
+                    ORA!
+                  </motion.div>
+                ))}
+              </div>
 
               <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 200 }}
+                transition={{ type: 'spring', stiffness: 300, delay: 0.3 }}
                 className="relative z-10 text-center"
               >
                 <motion.div
                   animate={{
+                    scale: [1, 1.15, 1],
                     textShadow: [
-                      '0 0 20px #ff3cc7, 0 0 40px #a855f7',
-                      '0 0 40px #ff3cc7, 0 0 80px #a855f7',
-                      '0 0 20px #ff3cc7, 0 0 40px #a855f7',
+                      '0 0 30px #ff3cc7, 0 0 60px #a855f7',
+                      '0 0 60px #ff3cc7, 0 0 120px #a855f7',
+                      '0 0 30px #ff3cc7, 0 0 60px #a855f7',
                     ]
                   }}
-                  transition={{ duration: 0.5, repeat: Infinity }}
-                  className="text-8xl font-black text-white mb-4"
+                  transition={{ duration: 0.3, repeat: Infinity }}
+                  className="text-9xl font-black text-white mb-6"
                 >
                   PRODUCTIVITY
                 </motion.div>
                 <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: '100%' }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="h-2 bg-gradient-to-r from-neon-pink via-sakura-400 to-neon-purple rounded-full mx-auto"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.4, delay: 0.4 }}
+                  className="h-3 bg-gradient-to-r from-yellow-400 via-neon-pink to-neon-purple rounded-full mx-auto shadow-2xl"
+                  style={{ boxShadow: '0 0 40px #ff3cc7' }}
                 />
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="text-4xl font-bold text-white/90 mt-6"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6, type: 'spring' }}
+                  className="text-5xl font-black text-white/90 mt-8"
+                  style={{ textShadow: '0 0 20px #ffa3c5' }}
                 >
                   がんばって！🌸
                 </motion.div>
@@ -188,8 +400,8 @@ export function IntroAnimation() {
             </>
           )}
 
-          {/* Stage 4: Fade Out */}
-          {stage >= 4 && (
+          {/* Stage 5: Fade Out */}
+          {stage >= 5 && (
             <motion.div
               initial={{ opacity: 1 }}
               animate={{ opacity: 0 }}
@@ -202,7 +414,7 @@ export function IntroAnimation() {
         </div>
 
         {/* Particle effects */}
-        {stage >= 2 && stage < 4 && (
+        {stage >= 3 && stage < 5 && (
           <div className="absolute inset-0 pointer-events-none">
             {[...Array(30)].map((_, i) => (
               <motion.div

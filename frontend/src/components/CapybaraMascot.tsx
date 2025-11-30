@@ -21,27 +21,34 @@ const defaultMessages = [
 
 export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }: CapybaraMascotProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const [isTalking, setIsTalking] = useState(false)
   const [currentMessage, setCurrentMessage] = useState('')
-  const [messageIndex, setMessageIndex] = useState(0)
+  const [entryDirection, setEntryDirection] = useState<'left' | 'right'>('right')
 
   useEffect(() => {
-    // Show capybara with a random message periodically
-    const showCapybara = () => {
-      const randomMessage = messages[Math.floor(Math.random() * messages.length)]
-      setCurrentMessage(randomMessage)
-      setIsVisible(true)
+    // Capybara is always visible, but sometimes talks
+    setIsVisible(true)
 
-      // Hide after 5 seconds
+    const showMessage = () => {
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)]
+      // Only use left and right to avoid weird positioning
+      const randomDirection: 'left' | 'right' = Math.random() > 0.5 ? 'right' : 'left'
+
+      setCurrentMessage(randomMessage)
+      setEntryDirection(randomDirection)
+      setIsTalking(true)
+
+      // Stop talking after 5 seconds
       setTimeout(() => {
-        setIsVisible(false)
+        setIsTalking(false)
       }, 5000)
     }
 
     // Show first message after 3 seconds
-    const initialTimeout = setTimeout(showCapybara, 3000)
+    const initialTimeout = setTimeout(showMessage, 3000)
 
-    // Then show periodically
-    const periodicInterval = setInterval(showCapybara, interval)
+    // Then show messages periodically
+    const periodicInterval = setInterval(showMessage, interval)
 
     return () => {
       clearTimeout(initialTimeout)
@@ -49,45 +56,75 @@ export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }:
     }
   }, [messages, interval])
 
+  const getEntryAnimation = () => {
+    return entryDirection === 'left'
+      ? { x: -400, opacity: 0 }
+      : { x: 400, opacity: 0 }
+  }
+
+  const getPosition = () => {
+    return entryDirection === 'left'
+      ? 'bottom-8 left-8'
+      : 'bottom-8 right-8'
+  }
+
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ x: -400, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -400, opacity: 0 }}
+          initial={getEntryAnimation()}
+          animate={{ x: 0, y: 0, opacity: 1 }}
+          exit={getEntryAnimation()}
           transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-          className="fixed bottom-8 left-8 z-50 flex items-end gap-4"
+          className={`fixed ${getPosition()} z-50 flex items-end gap-4 ${entryDirection === 'right' ? 'flex-row-reverse' : ''}`}
         >
           {/* Speech Bubble */}
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ delay: 0.3 }}
-            className="relative bg-white rounded-2xl px-6 py-4 shadow-2xl max-w-xs"
-          >
-            {/* Typing animation */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-gray-800 font-semibold text-lg"
-            >
-              {currentMessage}
-            </motion.p>
+          <AnimatePresence>
+            {isTalking && (
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ delay: 0.3 }}
+                className={`relative bg-white rounded-2xl px-6 py-4 shadow-2xl max-w-xs ${
+                  entryDirection === 'right' ? 'order-first' : ''
+                }`}
+              >
+                {/* Typing animation */}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="text-gray-800 font-semibold text-lg"
+                >
+                  {currentMessage}
+                </motion.p>
 
-            {/* Speech bubble tail */}
-            <div className="absolute bottom-4 -right-2 w-4 h-4 bg-white transform rotate-45" />
-          </motion.div>
+                {/* Speech bubble tail */}
+                <div className={`absolute bottom-4 w-4 h-4 bg-white transform rotate-45 ${
+                  entryDirection === 'right' ? '-left-2' : '-right-2'
+                }`} />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Capybara Character */}
           <motion.div
-            animate={{
-              y: [0, -10, 0]
-            }}
+            animate={
+              isTalking
+                ? {
+                    y: [0, -10, 0],
+                    rotate: [0, -5, 5, -5, 0]
+                  }
+                : {
+                    // Idle animation - chilling
+                    y: [0, -5, 0],
+                    rotate: [0, 2, -2, 0],
+                    scale: [1, 1.05, 1]
+                  }
+            }
             transition={{
-              duration: 2,
+              duration: isTalking ? 0.5 : 3,
               repeat: Infinity,
               ease: "easeInOut"
             }}
