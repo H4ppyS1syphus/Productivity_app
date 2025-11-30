@@ -9,25 +9,28 @@ export function IntroAnimation() {
     // Show intro on every page load!
     setShow(true)
 
-    // Much faster, JoJo-style pacing with CAPYBARA!
-    // Stage 1: Power up (0-0.8s)
-    const stage1 = setTimeout(() => setStage(1), 200)
+    // Anime-style pacing: FAST → PAUSE → SLOW → FAST → PAUSE
+    // Stage 1: Power up - FAST (0-1s)
+    const stage1 = setTimeout(() => setStage(1), 300)
 
-    // Stage 2: Capybara vs Procrastination (0.8-1.8s)
-    const stage2 = setTimeout(() => setStage(2), 800)
+    // Stage 2: Capybara entrance - SLOW buildup (1-2.5s)
+    const stage2 = setTimeout(() => setStage(2), 1000)
 
-    // Stage 3: MENACING (1.8-2.5s)
-    const stage3 = setTimeout(() => setStage(3), 1800)
+    // Stage 3: MENACING pause - DRAMATIC HOLD (2.5-3.5s)
+    const stage3 = setTimeout(() => setStage(3), 2500)
 
-    // Stage 4: ORA ORA Impact (2.5-3.5s)
-    const stage4 = setTimeout(() => setStage(4), 2500)
+    // Stage 4: ORA ORA - EXPLOSIVE FAST (3.5-5s)
+    const stage4 = setTimeout(() => setStage(4), 3500)
 
-    // Stage 5: Fade out (3.5-4.8s)
-    const stage5 = setTimeout(() => setStage(5), 3500)
+    // Stage 5: Impact hold - FREEZE FRAME (5-6s)
+    const stage5 = setTimeout(() => setStage(5), 5000)
+
+    // Stage 6: Fade out (6-7s)
+    const stage6 = setTimeout(() => setStage(6), 6000)
 
     const hideTimeout = setTimeout(() => {
       setShow(false)
-    }, 4800)
+    }, 7200)
 
     return () => {
       clearTimeout(stage1)
@@ -35,8 +38,10 @@ export function IntroAnimation() {
       clearTimeout(stage3)
       clearTimeout(stage4)
       clearTimeout(stage5)
+      clearTimeout(stage6)
       clearTimeout(hideTimeout)
     }
+
   }, [])
 
   if (!show) return null
@@ -63,7 +68,7 @@ export function IntroAnimation() {
               transition={{
                 duration: 0.4,
                 delay: i * 0.02,
-                repeat: stage >= 1 && stage < 5 ? Infinity : 0,
+                repeat: stage >= 1 && stage < 6 ? Infinity : 0,
                 repeatDelay: 0.5,
                 ease: "easeOut"
               }}
@@ -82,8 +87,8 @@ export function IntroAnimation() {
           ))}
         </div>
 
-        {/* MENACING effect (ゴゴゴゴ) */}
-        {stage >= 3 && stage < 5 && (
+        {/* MENACING effect (ゴゴゴゴ) - DRAMATIC PAUSE */}
+        {stage >= 3 && stage < 6 && (
           <div className="absolute inset-0 overflow-hidden">
             {[...Array(8)].map((_, i) => (
               <motion.div
@@ -117,16 +122,16 @@ export function IntroAnimation() {
 
         {/* Center stage */}
         <div className="relative z-10">
-          {/* Stage 1: Power Up */}
+          {/* Stage 1: Power Up - FAST BURST */}
           {stage >= 1 && stage < 2 && (
             <>
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{
                   scale: [0, 3, 1.5],
-                  rotate: [- 180, 0, 0]
+                  rotate: [-180, 0, 0]
                 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: [0.87, 0, 0.13, 1] }} // Dramatic ease
                 className="text-9xl text-center mb-8"
                 style={{
                   filter: 'drop-shadow(0 0 30px #ffff00) drop-shadow(0 0 60px #ff6600)',
@@ -159,19 +164,23 @@ export function IntroAnimation() {
             </>
           )}
 
-          {/* Stage 2: Capybara vs Procrastination! */}
+          {/* Stage 2: Capybara vs Procrastination - SLOW ANTICIPATION */}
           {stage >= 2 && stage < 3 && (
             <>
               <div className="flex items-center justify-center gap-16">
-                {/* Capybara on left - fighting! */}
+                {/* Capybara on left - SLOW entrance with anticipation */}
                 <motion.div
                   initial={{ x: -500, rotate: -90 }}
                   animate={{
-                    x: [-500, -50, 0],
-                    rotate: [-90, 0, 0],
-                    scale: [0.5, 1.2, 1]
+                    x: [-500, -80, 0],
+                    rotate: [-90, -20, 0],
+                    scale: [0.3, 1.1, 1]
                   }}
-                  transition={{ duration: 0.5, ease: "backOut" }}
+                  transition={{
+                    duration: 1.2,  // SLOWER for dramatic entrance
+                    ease: [0.34, 1.56, 0.64, 1],  // Bounce-like ease
+                    times: [0, 0.6, 1]  // Hold at mid-point
+                  }}
                   className="relative"
                 >
                   <motion.div
@@ -400,12 +409,44 @@ export function IntroAnimation() {
             </>
           )}
 
-          {/* Stage 5: Fade Out */}
-          {stage >= 5 && (
+          {/* Stage 5: FREEZE FRAME - Dramatic hold */}
+          {stage >= 5 && stage < 6 && (
+            <motion.div
+              initial={{ opacity: 1, scale: 1 }}
+              animate={{
+                scale: [1, 1.05, 1],
+              }}
+              transition={{
+                duration: 0.8,
+                ease: "easeInOut",
+                repeat: 1
+              }}
+              className="relative z-10 text-center"
+            >
+              <motion.div
+                className="text-9xl font-black text-white mb-6"
+                style={{
+                  textShadow: '0 0 50px #ff3cc7, 0 0 100px #a855f7, 0 0 150px #ffff00'
+                }}
+              >
+                PRODUCTIVITY
+              </motion.div>
+              <div className="h-3 bg-gradient-to-r from-yellow-400 via-neon-pink to-neon-purple rounded-full mx-auto shadow-2xl"
+                  style={{ boxShadow: '0 0 60px #ff3cc7, 0 0 100px #a855f7' }}
+              />
+              <div className="text-5xl font-black text-white/90 mt-8"
+                  style={{ textShadow: '0 0 30px #ffa3c5' }}>
+                がんばって！🌸
+              </div>
+            </motion.div>
+          )}
+
+          {/* Stage 6: Fade Out */}
+          {stage >= 6 && (
             <motion.div
               initial={{ opacity: 1 }}
               animate={{ opacity: 0 }}
-              transition={{ duration: 1 }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
               className="text-center"
             >
               <div className="text-6xl">✨</div>
@@ -414,7 +455,7 @@ export function IntroAnimation() {
         </div>
 
         {/* Particle effects */}
-        {stage >= 3 && stage < 5 && (
+        {stage >= 3 && stage < 6 && (
           <div className="absolute inset-0 pointer-events-none">
             {[...Array(30)].map((_, i) => (
               <motion.div
