@@ -60,17 +60,29 @@ class APIClient {
     this.baseURL = baseURL.replace(/\/+$/, ""); // remove trailing slashes
   }
 
+  private getAuthToken(): string | null {
+    return localStorage.getItem('auth_token');
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+    const token = this.getAuthToken();
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...options.headers as Record<string, string>,
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(url, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
     });
 
     if (!response.ok) {

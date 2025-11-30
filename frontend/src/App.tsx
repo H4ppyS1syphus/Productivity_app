@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { api, type Task, type TaskCreate } from './services/api'
+import { authService } from './services/auth'
 import { TaskForm } from './features/tasks/TaskForm'
 import { TaskList } from './features/tasks/TaskList'
 import { StreakDisplay } from './features/streaks/StreakDisplay'
@@ -11,11 +12,14 @@ import { CapybaraMascot } from './components/CapybaraMascot'
 import { IntroAnimation } from './components/IntroAnimation'
 import { FloatingTimer } from './components/FloatingTimer'
 import { PWAInstallPrompt } from './components/PWAInstallPrompt'
+import { GoogleLogin } from './components/GoogleLogin'
 
 type FilterType = 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
 type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away'
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -26,10 +30,23 @@ function App() {
   // Mock streak data (replace with actual API call later)
   const [currentStreak, setCurrentStreak] = useState(7)
   const [longestStreak, _setLongestStreak] = useState(0);
-  // Load tasks on mount
+
+  // Check authentication on mount
   useEffect(() => {
-    loadTasks()
+    const checkAuth = () => {
+      const authenticated = authService.isAuthenticated()
+      setIsAuthenticated(authenticated)
+      setIsCheckingAuth(false)
+    }
+    checkAuth()
   }, [])
+
+  // Load tasks when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadTasks()
+    }
+  }, [isAuthenticated])
 
   const loadTasks = async () => {
     try {
@@ -84,6 +101,33 @@ function App() {
     }
   }
 
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true)
+  }
+
+  const handleLogout = () => {
+    authService.logout()
+    setIsAuthenticated(false)
+    setTasks([])
+  }
+
+  // Show login screen if not authenticated
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-mocha-base flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="w-12 h-12 border-4 border-mocha-blue border-t-transparent rounded-full"
+        />
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <GoogleLogin onSuccess={handleLoginSuccess} />
+  }
+
   const stats = {
     total: tasks.length,
     completed: tasks.filter(t => t.status === 'completed').length,
@@ -129,8 +173,18 @@ function App() {
         <motion.header
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-6 md:mb-10"
+          className="text-center mb-6 md:mb-10 relative"
         >
+          {/* Logout button in top-right corner */}
+          <motion.button
+            onClick={handleLogout}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="absolute top-0 right-4 px-4 py-2 bg-mocha-surface0/50 hover:bg-mocha-surface1/50 rounded-xl text-mocha-text text-sm font-semibold border border-mocha-surface2 transition-colors"
+          >
+            Logout
+          </motion.button>
+
           <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-mocha-blue via-mocha-mauve to-mocha-sapphire bg-clip-text text-transparent mb-2 md:mb-3">
             Productivity App
           </h1>

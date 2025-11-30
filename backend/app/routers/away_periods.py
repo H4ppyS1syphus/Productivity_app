@@ -13,29 +13,16 @@ from ..schemas.away_period import (
     AwayPeriod as AwayPeriodSchema,
     AwayPeriodList
 )
+from ..auth import get_current_user
 
 router = APIRouter()
-
-
-# Temporary: Use the same test user pattern as tasks
-def get_or_create_test_user(db: Session) -> User:
-    """Get or create a test user for development"""
-    user = db.query(User).filter(User.email == "test@example.com").first()
-    if not user:
-        user = User(
-            email="test@example.com",
-            name="Test User"
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    return user
 
 
 @router.get("/", response_model=AwayPeriodList)
 def get_away_periods(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -45,9 +32,7 @@ def get_away_periods(
     - skip: Number of periods to skip (for pagination)
     - limit: Maximum number of periods to return
     """
-    user = get_or_create_test_user(db)
-
-    query = db.query(AwayPeriod).filter(AwayPeriod.user_id == user.id)
+    query = db.query(AwayPeriod).filter(AwayPeriod.user_id == current_user.id)
     away_periods = query.offset(skip).limit(limit).all()
 
     # Find current away period
@@ -67,16 +52,15 @@ def get_away_periods(
 @router.post("/", response_model=AwayPeriodSchema, status_code=201)
 def create_away_period(
     period_data: AwayPeriodCreate,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Create a new away period.
     """
-    user = get_or_create_test_user(db)
-
     # Check for overlapping active periods
     overlapping = db.query(AwayPeriod).filter(
-        AwayPeriod.user_id == user.id,
+        AwayPeriod.user_id == current_user.id,
         AwayPeriod.is_active == True,
         AwayPeriod.start_date <= period_data.end_date,
         AwayPeriod.end_date >= period_data.start_date
@@ -89,7 +73,7 @@ def create_away_period(
         )
 
     period = AwayPeriod(
-        user_id=user.id,
+        user_id=current_user.id,
         **period_data.model_dump()
     )
 
@@ -103,16 +87,15 @@ def create_away_period(
 @router.get("/{period_id}", response_model=AwayPeriodSchema)
 def get_away_period(
     period_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Get a specific away period by ID.
     """
-    user = get_or_create_test_user(db)
-
     period = db.query(AwayPeriod).filter(
         AwayPeriod.id == period_id,
-        AwayPeriod.user_id == user.id
+        AwayPeriod.user_id == current_user.id
     ).first()
 
     if not period:
@@ -125,16 +108,15 @@ def get_away_period(
 def update_away_period(
     period_id: int,
     period_data: AwayPeriodUpdate,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Update an away period.
     """
-    user = get_or_create_test_user(db)
-
     period = db.query(AwayPeriod).filter(
         AwayPeriod.id == period_id,
-        AwayPeriod.user_id == user.id
+        AwayPeriod.user_id == current_user.id
     ).first()
 
     if not period:
@@ -154,16 +136,15 @@ def update_away_period(
 @router.post("/{period_id}/deactivate", response_model=AwayPeriodSchema)
 def deactivate_away_period(
     period_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Deactivate an away period (end it early).
     """
-    user = get_or_create_test_user(db)
-
     period = db.query(AwayPeriod).filter(
         AwayPeriod.id == period_id,
-        AwayPeriod.user_id == user.id
+        AwayPeriod.user_id == current_user.id
     ).first()
 
     if not period:
@@ -179,16 +160,15 @@ def deactivate_away_period(
 @router.delete("/{period_id}", status_code=204)
 def delete_away_period(
     period_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Delete an away period.
     """
-    user = get_or_create_test_user(db)
-
     period = db.query(AwayPeriod).filter(
         AwayPeriod.id == period_id,
-        AwayPeriod.user_id == user.id
+        AwayPeriod.user_id == current_user.id
     ).first()
 
     if not period:
