@@ -54,7 +54,11 @@ async def health_check():
     }
 
 
-# TODO: Register routers
-# from .routers import auth, tasks, streaks, calendar, gym, pomodoro
+# Register routers
+from .routers import tasks
+
+app.include_router(tasks.router, prefix="/api/tasks", tags=["tasks"])
+
+# TODO: Add more routers as they're implemented
+# from .routers import auth, streaks, calendar, gym, pomodoro
 # app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-# app.include_router(tasks.router, prefix="/api/tasks", tags=["tasks"])
