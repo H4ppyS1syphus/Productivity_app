@@ -53,31 +53,49 @@ export function GoogleLogin({ onSuccess, onError }: GoogleLoginProps) {
   const initializeGoogleSignIn = () => {
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
+    console.log('🔍 Google Sign-In Debug:', {
+      clientId: clientId ? `${clientId.substring(0, 20)}...` : 'MISSING',
+      hasGoogleScript: !!window.google,
+      buttonDivExists: !!document.getElementById('google-signin-button')
+    })
+
     if (!clientId) {
+      console.error('❌ Google Client ID not configured!')
       setError('Google Client ID not configured')
       setIsLoading(false)
       return
     }
 
     if (!window.google) {
+      console.error('❌ Google Sign-In script failed to load')
       setError('Google Sign-In failed to load')
       setIsLoading(false)
       return
     }
 
-    window.google.accounts.id.initialize({
-      client_id: clientId,
-      callback: handleCredentialResponse,
-    })
-
-    const buttonDiv = document.getElementById('google-signin-button')
-    if (buttonDiv) {
-      window.google.accounts.id.renderButton(buttonDiv, {
-        theme: 'filled_blue',
-        size: 'large',
-        width: 300,
-        text: 'signin_with',
+    try {
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleCredentialResponse,
       })
+
+      const buttonDiv = document.getElementById('google-signin-button')
+      if (buttonDiv) {
+        console.log('✅ Rendering Google Sign-In button...')
+        window.google.accounts.id.renderButton(buttonDiv, {
+          theme: 'filled_blue',
+          size: 'large',
+          width: 300,
+          text: 'signin_with',
+        })
+        console.log('✅ Google Sign-In button rendered!')
+      } else {
+        console.error('❌ Button div not found!')
+        setError('Button container not found')
+      }
+    } catch (err) {
+      console.error('❌ Error initializing Google Sign-In:', err)
+      setError('Failed to initialize Google Sign-In')
     }
 
     setIsLoading(false)
