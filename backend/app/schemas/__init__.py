@@ -10,6 +10,15 @@ from .away_period import (
     AwayPeriod,
     AwayPeriodList
 )
+from .calendar import (
+    CalendarEventCreate,
+    CalendarEventUpdate,
+    CalendarEventResponse,
+    CalendarEventList,
+    TaskSyncRequest,
+    TaskSyncResponse,
+    CalendarAuthStatus
+)
 
 __all__ = [
     "TaskCreate",
@@ -21,4 +30,11 @@ __all__ = [
     "AwayPeriodUpdate",
     "AwayPeriod",
     "AwayPeriodList",
+    "CalendarEventCreate",
+    "CalendarEventUpdate",
+    "CalendarEventResponse",
+    "CalendarEventList",
+    "TaskSyncRequest",
+    "TaskSyncResponse",
+    "CalendarAuthStatus",
 ]
