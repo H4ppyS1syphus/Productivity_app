@@ -35,14 +35,51 @@ interface GoogleLoginProps {
 export function GoogleLogin({ onSuccess, onError }: GoogleLoginProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [googleReady, setGoogleReady] = useState(false)
 
+  // Load Google Identity Services script
   useEffect(() => {
-    // Load Google Identity Services script
     const script = document.createElement('script')
     script.src = 'https://accounts.google.com/gsi/client'
     script.async = true
     script.defer = true
-    script.onload = initializeGoogleSignIn
+    script.onload = () => {
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
+      console.log('🔍 Google Script Loaded:', {
+        clientId: clientId ? `${clientId.substring(0, 20)}...` : 'MISSING',
+        hasGoogleScript: !!window.google,
+      })
+
+      if (!clientId) {
+        console.error('❌ Google Client ID not configured!')
+        setError('Google Client ID not configured')
+        setIsLoading(false)
+        return
+      }
+
+      if (!window.google) {
+        console.error('❌ Google Sign-In script failed to load')
+        setError('Google Sign-In failed to load')
+        setIsLoading(false)
+        return
+      }
+
+      // Initialize Google Sign-In (but don't render button yet)
+      try {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleCredentialResponse,
+        })
+        setGoogleReady(true)
+        setIsLoading(false)
+        console.log('✅ Google Sign-In initialized, ready to render button')
+      } catch (err) {
+        console.error('❌ Error initializing Google Sign-In:', err)
+        setError('Failed to initialize Google Sign-In')
+        setIsLoading(false)
+      }
+    }
     document.body.appendChild(script)
 
     return () => {
@@ -50,36 +87,16 @@ export function GoogleLogin({ onSuccess, onError }: GoogleLoginProps) {
     }
   }, [])
 
-  const initializeGoogleSignIn = () => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+  // Render the button AFTER the div exists in DOM
+  useEffect(() => {
+    if (googleReady && window.google) {
+      const buttonDiv = document.getElementById('google-signin-button')
 
-    console.log('🔍 Google Sign-In Debug:', {
-      clientId: clientId ? `${clientId.substring(0, 20)}...` : 'MISSING',
-      hasGoogleScript: !!window.google,
-      buttonDivExists: !!document.getElementById('google-signin-button')
-    })
-
-    if (!clientId) {
-      console.error('❌ Google Client ID not configured!')
-      setError('Google Client ID not configured')
-      setIsLoading(false)
-      return
-    }
-
-    if (!window.google) {
-      console.error('❌ Google Sign-In script failed to load')
-      setError('Google Sign-In failed to load')
-      setIsLoading(false)
-      return
-    }
-
-    try {
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleCredentialResponse,
+      console.log('🔍 Attempting to render button:', {
+        googleReady,
+        buttonDivExists: !!buttonDiv,
       })
 
-      const buttonDiv = document.getElementById('google-signin-button')
       if (buttonDiv) {
         console.log('✅ Rendering Google Sign-In button...')
         window.google.accounts.id.renderButton(buttonDiv, {
@@ -90,16 +107,10 @@ export function GoogleLogin({ onSuccess, onError }: GoogleLoginProps) {
         })
         console.log('✅ Google Sign-In button rendered!')
       } else {
-        console.error('❌ Button div not found!')
-        setError('Button container not found')
+        console.error('❌ Button div still not found after render!')
       }
-    } catch (err) {
-      console.error('❌ Error initializing Google Sign-In:', err)
-      setError('Failed to initialize Google Sign-In')
     }
-
-    setIsLoading(false)
-  }
+  }, [googleReady]) // Render button when Google is ready
 
   const handleCredentialResponse = async (response: { credential: string }) => {
     try {
