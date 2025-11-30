@@ -25,8 +25,8 @@ function App() {
 
   // Mock streak data (replace with actual API call later)
   const [currentStreak, setCurrentStreak] = useState(7)
-  const [longestStreak] = useState(0);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [longestStreak, setLongestStreak] = useState(0);
   // Load tasks on mount
   useEffect(() => {
     loadTasks()
