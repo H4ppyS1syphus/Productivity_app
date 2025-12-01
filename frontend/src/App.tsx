@@ -256,14 +256,17 @@ function App() {
               </motion.button>
             )}
             {hasCalendarAuth && (
-              <motion.div
+              <motion.button
+                onClick={() => authService.initiateCalendarAuth()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="px-4 py-2 bg-mocha-green/20 rounded-xl text-mocha-green text-sm font-semibold border border-mocha-green/30"
-                title="Calendar connected"
+                className="px-4 py-2 bg-mocha-green/20 hover:bg-mocha-green/30 rounded-xl text-mocha-green text-sm font-semibold border border-mocha-green/30 transition-all cursor-pointer"
+                title="Calendar connected (click to reconnect)"
               >
                 ✓ Calendar
-              </motion.div>
+              </motion.button>
             )}
             {/* Logout button */}
             <motion.button
