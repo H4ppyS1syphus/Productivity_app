@@ -28,6 +28,13 @@ export function TaskList({
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [editTitle, setEditTitle] = useState('')
   const [editDescription, setEditDescription] = useState('')
+  const [editType, setEditType] = useState<Task['type']>('daily')
+  const [editDueDate, setEditDueDate] = useState('')
+  const [editPauseOnAway, setEditPauseOnAway] = useState(true)
+  const [editIsRecurring, setEditIsRecurring] = useState(false)
+  const [editRecurrenceTime, setEditRecurrenceTime] = useState('09:00')
+  const [editRecurrenceDayOfWeek, setEditRecurrenceDayOfWeek] = useState(0)
+  const [editRecurrenceDayOfMonth, setEditRecurrenceDayOfMonth] = useState(1)
   const [editLoading, setEditLoading] = useState(false)
 
   const filteredTasks = tasks.filter(task => {
@@ -44,10 +51,29 @@ export function TaskList({
 
     setEditLoading(true)
     try {
-      await onUpdate(editingTask.id, {
+      const updates: TaskUpdate = {
         title: editTitle.trim(),
         description: editDescription.trim() || undefined,
-      })
+        type: editType,
+        due_date: editDueDate || undefined,
+        pause_on_away: editPauseOnAway,
+        is_recurring: editIsRecurring,
+      }
+
+      // Add recurring fields if enabled
+      if (editIsRecurring) {
+        if (editType === 'daily') {
+          updates.recurrence_time = `${editRecurrenceTime}:00`
+        } else if (editType === 'weekly') {
+          updates.recurrence_day_of_week = editRecurrenceDayOfWeek
+          updates.recurrence_time = `${editRecurrenceTime}:00`
+        } else if (editType === 'monthly') {
+          updates.recurrence_day_of_month = editRecurrenceDayOfMonth
+          updates.recurrence_time = `${editRecurrenceTime}:00`
+        }
+      }
+
+      await onUpdate(editingTask.id, updates)
       setEditingTask(null)
     } finally {
       setEditLoading(false)
@@ -194,6 +220,13 @@ export function TaskList({
                     setEditingTask(task)
                     setEditTitle(task.title)
                     setEditDescription(task.description || '')
+                    setEditType(task.type)
+                    setEditDueDate(task.due_date || '')
+                    setEditPauseOnAway(task.pause_on_away)
+                    setEditIsRecurring(task.is_recurring)
+                    setEditRecurrenceTime(task.recurrence_time?.slice(0, 5) || '09:00')
+                    setEditRecurrenceDayOfWeek(task.recurrence_day_of_week || 0)
+                    setEditRecurrenceDayOfMonth(task.recurrence_day_of_month || 1)
                   }}
                   className="text-white/40 hover:text-mocha-blue hover:bg-mocha-blue/20 transition-colors
                            p-2 rounded-lg"
