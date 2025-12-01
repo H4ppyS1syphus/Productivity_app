@@ -9,6 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'icon.svg'],
       manifest: {
         name: 'Productivity App - Capybara Power!',

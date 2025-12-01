@@ -13,6 +13,7 @@ import { CapybaraMascot } from './components/CapybaraMascot'
 import { IntroAnimation } from './components/IntroAnimation'
 import { FloatingTimer } from './components/FloatingTimer'
 import { PWAInstallPrompt } from './components/PWAInstallPrompt'
+import { PWAUpdateNotifier } from './components/PWAUpdateNotifier'
 import { GoogleLogin } from './components/GoogleLogin'
 import { BottomNavigation } from './components/BottomNavigation'
 import { MobileHeader } from './components/MobileHeader'
@@ -227,6 +228,9 @@ function App() {
 
       {/* PWA Install Prompt */}
       <PWAInstallPrompt />
+
+      {/* PWA Auto-Update Notifier */}
+      <PWAUpdateNotifier />
 
       <div className="container mx-auto px-3 md:px-4 py-4 md:py-8 max-w-7xl relative z-10 pb-24 md:pb-8">
         {/* Header - New Mobile Optimized */}
