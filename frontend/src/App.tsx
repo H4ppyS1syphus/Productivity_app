@@ -35,6 +35,7 @@ function App() {
   // Mock streak data (replace with actual API call later)
   const [currentStreak, setCurrentStreak] = useState(7)
   const [longestStreak, _setLongestStreak] = useState(0);
+  const [statsExpanded, setStatsExpanded] = useState(false)
 
   // Check authentication on mount
   useEffect(() => {
@@ -283,25 +284,100 @@ function App() {
           >
             {activeTab === 'tasks' && (
               <div>
-                {/* Stats Bar - Mobile Optimized */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
-                  {[
-                    { label: 'Total', value: stats.total, color: 'from-mocha-blue to-blue-600', emoji: '📊' },
-                    { label: 'Completed', value: stats.completed, color: 'from-mocha-green to-emerald-600', emoji: '✅' },
-                    { label: 'Pending', value: stats.pending, color: 'from-mocha-yellow to-yellow-600', emoji: '⏳' },
-                    { label: 'Success', value: stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%', color: 'from-mocha-mauve to-purple-600', emoji: '🎯' },
-                  ].map((stat) => (
-                    <motion.div
-                      key={stat.label}
-                      whileHover={{ scale: 1.05, rotate: 2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`bg-gradient-to-br ${stat.color} p-4 md:p-6 rounded-xl md:rounded-2xl shadow-xl text-white touch-manipulation`}
+                {/* Stats Bar - Collapsible on Mobile */}
+                <div className="mb-4 md:mb-8">
+                  {/* Mobile: Compact stats with expand button */}
+                  <div className="md:hidden">
+                    <motion.button
+                      onClick={() => setStatsExpanded(!statsExpanded)}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full bg-mocha-surface0/80 backdrop-blur-sm rounded-xl p-4 border border-mocha-surface2/50 mb-3 touch-manipulation"
                     >
-                      <div className="text-2xl md:text-3xl mb-1 md:mb-2">{stat.emoji}</div>
-                      <div className="text-3xl md:text-4xl font-black leading-none">{stat.value}</div>
-                      <div className="text-xs md:text-sm opacity-90 mt-1">{stat.label}</div>
-                    </motion.div>
-                  ))}
+                      <div className="flex items-center justify-between">
+                        <div className="flex gap-4">
+                          <div className="text-center">
+                            <div className="text-xl font-black text-mocha-blue">{stats.total}</div>
+                            <div className="text-xs text-mocha-subtext0">Total</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-black text-mocha-green">{stats.completed}</div>
+                            <div className="text-xs text-mocha-subtext0">Done</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-black text-mocha-yellow">{stats.pending}</div>
+                            <div className="text-xs text-mocha-subtext0">Active</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-black text-mocha-mauve">
+                              {stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%'}
+                            </div>
+                            <div className="text-xs text-mocha-subtext0">Rate</div>
+                          </div>
+                        </div>
+                        <motion.div
+                          animate={{ rotate: statsExpanded ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="text-mocha-text"
+                        >
+                          ▼
+                        </motion.div>
+                      </div>
+                    </motion.button>
+
+                    <AnimatePresence>
+                      {statsExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="grid grid-cols-2 gap-3 mb-3">
+                            {[
+                              { label: 'Total', value: stats.total, color: 'from-mocha-blue to-blue-600', emoji: '📊' },
+                              { label: 'Completed', value: stats.completed, color: 'from-mocha-green to-emerald-600', emoji: '✅' },
+                              { label: 'Pending', value: stats.pending, color: 'from-mocha-yellow to-yellow-600', emoji: '⏳' },
+                              { label: 'Success', value: stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%', color: 'from-mocha-mauve to-purple-600', emoji: '🎯' },
+                            ].map((stat) => (
+                              <motion.div
+                                key={stat.label}
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ duration: 0.2 }}
+                                className={`bg-gradient-to-br ${stat.color} p-4 rounded-xl shadow-xl text-white`}
+                              >
+                                <div className="text-2xl mb-1">{stat.emoji}</div>
+                                <div className="text-3xl font-black leading-none">{stat.value}</div>
+                                <div className="text-xs opacity-90 mt-1">{stat.label}</div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Desktop: Full stats always visible */}
+                  <div className="hidden md:grid grid-cols-4 gap-4">
+                    {[
+                      { label: 'Total', value: stats.total, color: 'from-mocha-blue to-blue-600', emoji: '📊' },
+                      { label: 'Completed', value: stats.completed, color: 'from-mocha-green to-emerald-600', emoji: '✅' },
+                      { label: 'Pending', value: stats.pending, color: 'from-mocha-yellow to-yellow-600', emoji: '⏳' },
+                      { label: 'Success', value: stats.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%', color: 'from-mocha-mauve to-purple-600', emoji: '🎯' },
+                    ].map((stat) => (
+                      <motion.div
+                        key={stat.label}
+                        whileHover={{ scale: 1.05, rotate: 2 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`bg-gradient-to-br ${stat.color} p-6 rounded-2xl shadow-xl text-white`}
+                      >
+                        <div className="text-3xl mb-2">{stat.emoji}</div>
+                        <div className="text-4xl font-black leading-none">{stat.value}</div>
+                        <div className="text-sm opacity-90 mt-1">{stat.label}</div>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Filter Tabs - Mobile Optimized */}
