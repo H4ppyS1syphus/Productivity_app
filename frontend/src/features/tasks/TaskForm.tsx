@@ -10,10 +10,16 @@ interface TaskFormProps {
 export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [type, setType] = useState<'daily' | 'weekly' | 'long_term' | 'gym_workout'>('daily')
+  const [type, setType] = useState<'daily' | 'weekly' | 'monthly' | 'long_term' | 'gym_workout'>('daily')
   const [dueDate, setDueDate] = useState('')
   const [pauseOnAway, setPauseOnAway] = useState(true)
   const [loading, setLoading] = useState(false)
+
+  // Recurring task fields
+  const [isRecurring, setIsRecurring] = useState(false)
+  const [recurrenceTime, setRecurrenceTime] = useState('09:00')
+  const [recurrenceDayOfWeek, setRecurrenceDayOfWeek] = useState(1) // Monday
+  const [recurrenceDayOfMonth, setRecurrenceDayOfMonth] = useState(1)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,13 +27,30 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
 
     setLoading(true)
     try {
-      await onSubmit({
+      const taskData: TaskCreate = {
         title: title.trim(),
         description: description.trim() || undefined,
         type,
         due_date: dueDate || undefined,
         pause_on_away: pauseOnAway,
-      })
+      }
+
+      // Add recurring fields if enabled
+      if (isRecurring) {
+        taskData.is_recurring = true
+
+        if (type === 'daily') {
+          taskData.recurrence_time = recurrenceTime
+        } else if (type === 'weekly') {
+          taskData.recurrence_day_of_week = recurrenceDayOfWeek
+          taskData.recurrence_time = recurrenceTime
+        } else if (type === 'monthly') {
+          taskData.recurrence_day_of_month = recurrenceDayOfMonth
+          taskData.recurrence_time = recurrenceTime
+        }
+      }
+
+      await onSubmit(taskData)
 
       // Reset form
       setTitle('')
@@ -35,6 +58,10 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
       setType('daily')
       setDueDate('')
       setPauseOnAway(true)
+      setIsRecurring(false)
+      setRecurrenceTime('09:00')
+      setRecurrenceDayOfWeek(1)
+      setRecurrenceDayOfMonth(1)
     } finally {
       setLoading(false)
     }
@@ -101,10 +128,117 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
         >
           <option value="daily" className="bg-mocha-surface0">📅 Daily</option>
           <option value="weekly" className="bg-mocha-surface0">📆 Weekly</option>
+          <option value="monthly" className="bg-mocha-surface0">🗓️ Monthly</option>
           <option value="long_term" className="bg-mocha-surface0">🎯 Long Term</option>
           <option value="gym_workout" className="bg-mocha-surface0">💪 Gym Workout</option>
         </select>
       </div>
+
+      {/* Recurring Task Options */}
+      {(type === 'daily' || type === 'weekly' || type === 'monthly') && (
+        <div className="mb-5">
+          <label className="flex items-center cursor-pointer group mb-3">
+            <div className="relative">
+              <input
+                type="checkbox"
+                checked={isRecurring}
+                onChange={(e) => setIsRecurring(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 rounded-full bg-mocha-surface1/60 border-2 border-mocha-blue/30
+                            peer-checked:bg-gradient-to-r peer-checked:from-mocha-sapphire peer-checked:to-mocha-blue
+                            peer-checked:border-mocha-sapphire transition-all"></div>
+              <div className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white transition-all
+                            peer-checked:translate-x-5"></div>
+            </div>
+            <span className="ml-3 text-sm font-semibold text-mocha-text group-hover:text-white transition-colors">
+              🔄 Make this a recurring task
+            </span>
+          </label>
+
+          {isRecurring && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="space-y-4 pl-4 border-l-2 border-mocha-sapphire/30"
+            >
+              {/* Time picker for all recurring types */}
+              <div>
+                <label className="block text-sm font-semibold text-mocha-subtext1 mb-2">
+                  Reset time
+                </label>
+                <input
+                  type="time"
+                  value={recurrenceTime}
+                  onChange={(e) => setRecurrenceTime(e.target.value)}
+                  className="w-full px-4 py-2 rounded-xl border-2 border-mocha-sapphire/30
+                           bg-mocha-surface1/60 text-white
+                           focus:outline-none focus:ring-2 focus:ring-mocha-sapphire
+                           transition-all"
+                />
+              </div>
+
+              {/* Day of week picker for weekly */}
+              {type === 'weekly' && (
+                <div>
+                  <label className="block text-sm font-semibold text-mocha-subtext1 mb-2">
+                    Reset on
+                  </label>
+                  <select
+                    value={recurrenceDayOfWeek}
+                    onChange={(e) => setRecurrenceDayOfWeek(Number(e.target.value))}
+                    className="w-full px-4 py-2 rounded-xl border-2 border-mocha-sapphire/30
+                             bg-mocha-surface1/60 text-white
+                             focus:outline-none focus:ring-2 focus:ring-mocha-sapphire
+                             transition-all cursor-pointer"
+                  >
+                    <option value={0}>Monday</option>
+                    <option value={1}>Tuesday</option>
+                    <option value={2}>Wednesday</option>
+                    <option value={3}>Thursday</option>
+                    <option value={4}>Friday</option>
+                    <option value={5}>Saturday</option>
+                    <option value={6}>Sunday</option>
+                  </select>
+                </div>
+              )}
+
+              {/* Day of month picker for monthly */}
+              {type === 'monthly' && (
+                <div>
+                  <label className="block text-sm font-semibold text-mocha-subtext1 mb-2">
+                    Reset on day
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={recurrenceDayOfMonth}
+                    onChange={(e) => setRecurrenceDayOfMonth(Number(e.target.value))}
+                    className="w-full px-4 py-2 rounded-xl border-2 border-mocha-sapphire/30
+                             bg-mocha-surface1/60 text-white
+                             focus:outline-none focus:ring-2 focus:ring-mocha-sapphire
+                             transition-all"
+                    placeholder="Day of month (1-31)"
+                  />
+                  <p className="text-xs text-mocha-subtext0 mt-1">
+                    Task will reset on day {recurrenceDayOfMonth} of each month
+                  </p>
+                </div>
+              )}
+
+              <div className="bg-mocha-sapphire/10 rounded-lg p-3 border border-mocha-sapphire/30">
+                <p className="text-xs text-mocha-subtext1">
+                  <span className="font-bold text-mocha-sapphire">ℹ️ Recurring:</span>{' '}
+                  {type === 'daily' && `This task will reset every day at ${recurrenceTime}`}
+                  {type === 'weekly' && `This task will reset every ${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][recurrenceDayOfWeek]} at ${recurrenceTime}`}
+                  {type === 'monthly' && `This task will reset on day ${recurrenceDayOfMonth} of each month at ${recurrenceTime}`}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      )}
 
       {/* Due Date */}
       <div className="mb-5">

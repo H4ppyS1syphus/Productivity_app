@@ -9,7 +9,7 @@ export interface Task {
   user_id: number;
   title: string;
   description?: string;
-  type: 'daily' | 'weekly' | 'long_term' | 'gym_workout';
+  type: 'daily' | 'weekly' | 'monthly' | 'long_term' | 'gym_workout';
   status: 'pending' | 'completed' | 'suggested';
   pause_on_away: boolean;
   due_date?: string;
@@ -17,15 +17,28 @@ export interface Task {
   created_at: string;
   recurrence?: string;
   calendar_event_id?: string;
+
+  // Recurring task fields
+  is_recurring: boolean;
+  recurrence_time?: string; // Time in HH:MM format
+  recurrence_day_of_week?: number; // 0-6 (Monday-Sunday)
+  recurrence_day_of_month?: number; // 1-31
+  last_reset_date?: string;
 }
 
 export interface TaskCreate {
   title: string;
   description?: string;
-  type?: 'daily' | 'weekly' | 'long_term' | 'gym_workout';
+  type?: 'daily' | 'weekly' | 'monthly' | 'long_term' | 'gym_workout';
   pause_on_away?: boolean;
   due_date?: string;
   recurrence?: string;
+
+  // Recurring task fields
+  is_recurring?: boolean;
+  recurrence_time?: string; // Time in HH:MM format
+  recurrence_day_of_week?: number; // 0-6 (Monday-Sunday)
+  recurrence_day_of_month?: number; // 1-31
 }
 
 export interface TaskList {
