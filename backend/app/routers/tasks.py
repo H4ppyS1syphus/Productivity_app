@@ -86,7 +86,7 @@ def get_task(
     return task
 
 
-@router.patch("/{task_id}", response_model=TaskResponse)
+@router.api_route("/{task_id}", methods=["PATCH", "PUT"], response_model=TaskResponse)
 def update_task(
     task_id: int,
     task_data: TaskUpdate,
@@ -95,6 +95,7 @@ def update_task(
 ):
     """
     Update a task.
+    If the task is synced to Google Calendar, the calendar event will be updated.
     """
     task = db.query(Task).filter(
         Task.id == task_id,
@@ -108,6 +109,26 @@ def update_task(
     update_data = task_data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(task, field, value)
+
+    # Update calendar event if synced
+    if task.calendar_event_id and current_user.google_refresh_token:
+        try:
+            from ..services.calendar import CalendarService
+            calendar_service = CalendarService(current_user, db)
+
+            # Update the calendar event with new task details
+            try:
+                calendar_service.update_event(
+                    event_id=task.calendar_event_id,
+                    title=task.title,
+                    description=task.description,
+                    start_time=task.due_date if task.due_date else None
+                )
+            except Exception as e:
+                # If calendar update fails, log but don't fail the task update
+                print(f"Failed to update calendar event: {e}")
+        except Exception as e:
+            print(f"Failed to initialize calendar service: {e}")
 
     db.commit()
     db.refresh(task)

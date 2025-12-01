@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { api, type Task, type TaskCreate } from './services/api'
+import { api, type Task, type TaskCreate, type TaskUpdate } from './services/api'
 import { authService } from './services/auth'
 import { calendarService } from './services/calendar'
 import { TaskForm } from './features/tasks/TaskForm'
@@ -132,6 +132,16 @@ function App() {
       if (updatedTask.status === 'completed') {
         setCurrentStreak(s => s + 1)
       }
+    } catch (err) {
+      setError('Failed to update task')
+      console.error('Error updating task:', err)
+    }
+  }
+
+  const handleUpdateTask = async (taskId: number, updates: TaskUpdate) => {
+    try {
+      const updatedTask = await api.updateTask(taskId, updates)
+      setTasks(tasks.map(t => t.id === taskId ? updatedTask : t))
     } catch (err) {
       setError('Failed to update task')
       console.error('Error updating task:', err)
@@ -360,6 +370,7 @@ function App() {
                   <TaskList
                     tasks={tasks}
                     onToggleComplete={handleToggleComplete}
+                    onUpdate={handleUpdateTask}
                     onDelete={handleDeleteTask}
                     onSyncToCalendar={handleSyncToCalendar}
                     onUnsyncFromCalendar={handleUnsyncFromCalendar}

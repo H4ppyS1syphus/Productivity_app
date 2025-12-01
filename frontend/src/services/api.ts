@@ -41,6 +41,21 @@ export interface TaskCreate {
   recurrence_day_of_month?: number; // 1-31
 }
 
+export interface TaskUpdate {
+  title?: string;
+  description?: string;
+  type?: 'daily' | 'weekly' | 'monthly' | 'long_term' | 'gym_workout';
+  pause_on_away?: boolean;
+  due_date?: string;
+  recurrence?: string;
+
+  // Recurring task fields
+  is_recurring?: boolean;
+  recurrence_time?: string; // Time in HH:MM:SS format
+  recurrence_day_of_week?: number; // 0-6 (Monday-Sunday)
+  recurrence_day_of_month?: number; // 1-31
+}
+
 export interface TaskList {
   tasks: Task[];
   total: number;
@@ -146,6 +161,13 @@ class APIClient {
   async uncompleteTask(taskId: number): Promise<Task> {
     return this.request<Task>(`/api/tasks/${taskId}/uncomplete`, {
       method: 'POST',
+    });
+  }
+
+  async updateTask(taskId: number, updates: TaskUpdate): Promise<Task> {
+    return this.request<Task>(`/api/tasks/${taskId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
     });
   }
 
