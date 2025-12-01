@@ -17,6 +17,7 @@ import { PWAUpdateNotifier } from './components/PWAUpdateNotifier'
 import { GoogleLogin } from './components/GoogleLogin'
 import { BottomNavigation } from './components/BottomNavigation'
 import { MobileHeader } from './components/MobileHeader'
+import { PullToRefresh } from './components/PullToRefresh'
 
 type FilterType = 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
 type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away'
@@ -283,8 +284,9 @@ function App() {
             transition={{ duration: 0.15 }}
           >
             {activeTab === 'tasks' && (
-              <div>
-                {/* Stats Bar - Collapsible on Mobile */}
+              <PullToRefresh onRefresh={loadTasks}>
+                <div>
+                  {/* Stats Bar - Collapsible on Mobile */}
                 <div className="mb-4 md:mb-8">
                   {/* Mobile: Compact stats with expand button */}
                   <div className="md:hidden">
@@ -454,7 +456,8 @@ function App() {
                     filter={filter}
                   />
                 )}
-              </div>
+                </div>
+              </PullToRefresh>
             )}
 
             {activeTab === 'streaks' && (
