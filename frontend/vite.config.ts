@@ -9,20 +9,22 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'icon.svg'],
       manifest: {
-        name: 'Productivity App',
-        short_name: 'ProductivityApp',
-        description: 'Personal productivity app with task management, streaks, and more - がんばって！',
-        theme_color: '#1e1e2e',
+        name: 'Productivity App - Capybara Power!',
+        short_name: 'Productivity',
+        description: 'Beautiful productivity app with Google Calendar integration, Pomodoro timer, streaks, and capybara mascot! がんばって! 🦫✨',
+        theme_color: '#89b4fa',
         background_color: '#1e1e2e',
         display: 'standalone',
-        orientation: 'portrait',
+        orientation: 'portrait-primary',
+        categories: ['productivity', 'utilities'],
         icons: [
           {
             src: 'pwa-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
             src: 'pwa-512x512.png',
@@ -30,23 +32,61 @@ export default defineConfig({
             type: 'image/png',
             purpose: 'any maskable'
           }
+        ],
+        shortcuts: [
+          {
+            name: 'Add Task',
+            short_name: 'New Task',
+            description: 'Quickly add a new task',
+            url: '/?action=new-task',
+            icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
+          },
+          {
+            name: 'Pomodoro Timer',
+            short_name: 'Focus',
+            description: 'Start a Pomodoro focus session',
+            url: '/?tab=pomodoro',
+            icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
+          }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/api\./,
+            urlPattern: /^https:\/\/.*\.googleapis\.com\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'google-apis-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/accounts\.google\.com\/.*/i,
+            handler: 'NetworkOnly'  // Never cache auth endpoints
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
               expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 300
-              }
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 5 // 5 minutes
+              },
+              networkTimeoutSeconds: 10
             }
           }
         ]
+      },
+      devOptions: {
+        enabled: true  // Enable PWA in development for testing
       }
     })
   ],

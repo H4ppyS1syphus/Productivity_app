@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background gradient (Tokyo Night theme) -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1e2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#11111b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#89b4fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#cba6f7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bg)" rx="110"/>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="60" fill="#89b4fa" opacity="0.1"/>
+  <circle cx="412" cy="412" r="80" fill="#cba6f7" opacity="0.1"/>
+
+  <!-- Checkmark icon (productivity symbol) -->
+  <g transform="translate(256, 200)">
+    <circle r="120" fill="url(#accent)" opacity="0.2"/>
+    <path d="M -50 0 L -20 40 L 60 -50"
+          stroke="url(#accent)"
+          stroke-width="30"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          fill="none"/>
+  </g>
+
+  <!-- Capybara emoji representation (simplified) -->
+  <text x="256" y="420"
+        font-size="80"
+        text-anchor="middle"
+        fill="#f5e0dc"
+        font-family="sans-serif">🦫</text>
+</svg>
