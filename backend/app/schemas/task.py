@@ -4,7 +4,7 @@ Pydantic schemas for Task API endpoints.
 
 from pydantic import BaseModel, Field
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, time
 from ..models.task import TaskType, TaskStatus
 
 
@@ -16,6 +16,12 @@ class TaskBase(BaseModel):
     recurrence: Optional[str] = None
     pause_on_away: bool = True
     due_date: Optional[datetime] = None
+
+    # Recurring task fields
+    is_recurring: bool = False
+    recurrence_time: Optional[time] = None  # Time of day (HH:MM:SS)
+    recurrence_day_of_week: Optional[int] = Field(None, ge=0, le=6)  # 0=Monday, 6=Sunday
+    recurrence_day_of_month: Optional[int] = Field(None, ge=1, le=31)  # Day of month
 
 
 class TaskCreate(TaskBase):
@@ -33,6 +39,12 @@ class TaskUpdate(BaseModel):
     pause_on_away: Optional[bool] = None
     due_date: Optional[datetime] = None
 
+    # Recurring task fields
+    is_recurring: Optional[bool] = None
+    recurrence_time: Optional[time] = None
+    recurrence_day_of_week: Optional[int] = Field(None, ge=0, le=6)
+    recurrence_day_of_month: Optional[int] = Field(None, ge=1, le=31)
+
 
 class TaskResponse(TaskBase):
     """Schema for task responses"""
@@ -42,6 +54,7 @@ class TaskResponse(TaskBase):
     completed_at: Optional[datetime] = None
     created_at: datetime
     calendar_event_id: Optional[str] = None
+    last_reset_date: Optional[datetime] = None  # For recurring tasks
 
     class Config:
         from_attributes = True  # Updated from orm_mode in Pydantic v2

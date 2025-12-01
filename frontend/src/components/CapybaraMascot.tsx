@@ -63,9 +63,11 @@ export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }:
   }
 
   const getPosition = () => {
+    // On mobile, position higher to avoid bottom nav (bottom-24)
+    // On desktop, keep at bottom-8
     return entryDirection === 'left'
-      ? 'bottom-8 left-8'
-      : 'bottom-8 right-8'
+      ? 'bottom-24 md:bottom-8 left-4 md:left-8'
+      : 'bottom-24 md:bottom-8 right-4 md:right-8'
   }
 
   return (
@@ -76,9 +78,9 @@ export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }:
           animate={{ x: 0, y: 0, opacity: 1 }}
           exit={getEntryAnimation()}
           transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-          className={`fixed ${getPosition()} z-50 flex items-end gap-4 ${entryDirection === 'right' ? 'flex-row-reverse' : ''}`}
+          className={`fixed ${getPosition()} z-40 flex items-end gap-2 md:gap-4 ${entryDirection === 'right' ? 'flex-row-reverse' : ''}`}
         >
-          {/* Speech Bubble */}
+          {/* Speech Bubble - hidden on mobile */}
           <AnimatePresence>
             {isTalking && (
               <motion.div
@@ -86,7 +88,7 @@ export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }:
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ delay: 0.3 }}
-                className={`relative bg-mocha-surface0 border-2 border-mocha-blue/50 rounded-2xl px-6 py-4 shadow-2xl max-w-xs ${
+                className={`hidden md:block relative bg-mocha-surface0 border-2 border-mocha-blue/50 rounded-2xl px-6 py-4 shadow-2xl max-w-xs ${
                   entryDirection === 'right' ? 'order-first' : ''
                 }`}
               >
@@ -132,12 +134,12 @@ export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }:
           >
             {/* Capybara Body */}
             <div className="relative">
-              {/* Main body - using a large capybara emoji */}
-              <div className="text-8xl filter drop-shadow-2xl">
+              {/* Main body - smaller on mobile, large on desktop */}
+              <div className="text-5xl md:text-8xl filter drop-shadow-2xl">
                 🦫
               </div>
 
-              {/* Sparkles */}
+              {/* Sparkles - smaller on mobile */}
               <motion.div
                 animate={{
                   scale: [1, 1.2, 1],
@@ -148,7 +150,7 @@ export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }:
                   repeat: Infinity,
                   ease: "linear"
                 }}
-                className="absolute -top-2 -right-2 text-3xl"
+                className="absolute -top-1 md:-top-2 -right-1 md:-right-2 text-xl md:text-3xl"
               >
                 ✨
               </motion.div>
@@ -163,7 +165,7 @@ export function CapybaraMascot({ messages = defaultMessages, interval = 30000 }:
                   repeat: Infinity,
                   ease: "linear"
                 }}
-                className="absolute -bottom-2 -left-2 text-2xl"
+                className="absolute -bottom-1 md:-bottom-2 -left-1 md:-left-2 text-lg md:text-2xl"
               >
                 💫
               </motion.div>

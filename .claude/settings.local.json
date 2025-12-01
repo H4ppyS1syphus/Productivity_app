@@ -16,7 +16,9 @@
       "Bash(npm run dev:*)",
       "Bash(git push:*)",
       "Bash(vercel env:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(alembic revision:*)",
+      "Bash(python -m alembic revision:*)"
     ],
     "deny": [],
     "ask": []
