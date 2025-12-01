@@ -20,7 +20,7 @@ export interface Task {
 
   // Recurring task fields
   is_recurring: boolean;
-  recurrence_time?: string; // Time in HH:MM format
+  recurrence_time?: string; // Time in HH:MM:SS format
   recurrence_day_of_week?: number; // 0-6 (Monday-Sunday)
   recurrence_day_of_month?: number; // 1-31
   last_reset_date?: string;
@@ -36,7 +36,7 @@ export interface TaskCreate {
 
   // Recurring task fields
   is_recurring?: boolean;
-  recurrence_time?: string; // Time in HH:MM format
+  recurrence_time?: string; // Time in HH:MM:SS format
   recurrence_day_of_week?: number; // 0-6 (Monday-Sunday)
   recurrence_day_of_month?: number; // 1-31
 }

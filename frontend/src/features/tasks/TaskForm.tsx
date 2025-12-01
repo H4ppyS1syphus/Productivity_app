@@ -18,7 +18,7 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
   // Recurring task fields
   const [isRecurring, setIsRecurring] = useState(false)
   const [recurrenceTime, setRecurrenceTime] = useState('09:00')
-  const [recurrenceDayOfWeek, setRecurrenceDayOfWeek] = useState(1) // Monday
+  const [recurrenceDayOfWeek, setRecurrenceDayOfWeek] = useState(0) // Monday (0-6)
   const [recurrenceDayOfMonth, setRecurrenceDayOfMonth] = useState(1)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,13 +40,13 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
         taskData.is_recurring = true
 
         if (type === 'daily') {
-          taskData.recurrence_time = recurrenceTime
+          taskData.recurrence_time = `${recurrenceTime}:00` // Add seconds for backend
         } else if (type === 'weekly') {
           taskData.recurrence_day_of_week = recurrenceDayOfWeek
-          taskData.recurrence_time = recurrenceTime
+          taskData.recurrence_time = `${recurrenceTime}:00` // Add seconds for backend
         } else if (type === 'monthly') {
           taskData.recurrence_day_of_month = recurrenceDayOfMonth
-          taskData.recurrence_time = recurrenceTime
+          taskData.recurrence_time = `${recurrenceTime}:00` // Add seconds for backend
         }
       }
 
@@ -60,7 +60,7 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
       setPauseOnAway(true)
       setIsRecurring(false)
       setRecurrenceTime('09:00')
-      setRecurrenceDayOfWeek(1)
+      setRecurrenceDayOfWeek(0)
       setRecurrenceDayOfMonth(1)
     } finally {
       setLoading(false)
