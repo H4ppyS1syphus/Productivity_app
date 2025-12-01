@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { api, type Task, type TaskCreate } from './services/api'
 import { authService } from './services/auth'
+import { calendarService } from './services/calendar'
 import { TaskForm } from './features/tasks/TaskForm'
 import { TaskList } from './features/tasks/TaskList'
 import { StreakDisplay } from './features/streaks/StreakDisplay'
@@ -20,6 +21,7 @@ type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away'
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [hasCalendarAuth, setHasCalendarAuth] = useState(false)
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -40,6 +42,48 @@ function App() {
     }
     checkAuth()
   }, [])
+
+  // Handle OAuth callback redirect
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search)
+      const code = urlParams.get('code')
+
+      if (code) {
+        console.log('📅 Handling Google Calendar OAuth callback...')
+        try {
+          await authService.exchangeCalendarCode(code)
+          setIsAuthenticated(true)
+          setHasCalendarAuth(true)
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname)
+          console.log('✅ Calendar connected successfully!')
+        } catch (err) {
+          console.error('❌ Calendar auth failed:', err)
+          setError('Failed to connect Google Calendar')
+        }
+      }
+    }
+
+    if (!isCheckingAuth) {
+      handleOAuthCallback()
+    }
+  }, [isCheckingAuth])
+
+  // Check calendar authorization status when authenticated
+  useEffect(() => {
+    const checkCalendarAuth = async () => {
+      if (isAuthenticated) {
+        try {
+          const status = await calendarService.checkAuthStatus()
+          setHasCalendarAuth(status.is_authorized)
+        } catch (err) {
+          console.error('Failed to check calendar auth:', err)
+        }
+      }
+    }
+    checkCalendarAuth()
+  }, [isAuthenticated])
 
   // Load tasks when authenticated
   useEffect(() => {
@@ -111,6 +155,28 @@ function App() {
     setTasks([])
   }
 
+  const handleSyncToCalendar = async (taskId: number) => {
+    try {
+      await calendarService.syncTask(taskId)
+      // Reload tasks to get updated calendar_event_id
+      await loadTasks()
+    } catch (err) {
+      setError('Failed to sync task to calendar')
+      console.error('Error syncing task:', err)
+    }
+  }
+
+  const handleUnsyncFromCalendar = async (taskId: number) => {
+    try {
+      await calendarService.unsyncTask(taskId)
+      // Reload tasks to clear calendar_event_id
+      await loadTasks()
+    } catch (err) {
+      setError('Failed to unsync task from calendar')
+      console.error('Error unsyncing task:', err)
+    }
+  }
+
   // Show login screen if not authenticated
   if (isCheckingAuth) {
     return (
@@ -175,15 +241,40 @@ function App() {
           animate={{ y: 0, opacity: 1 }}
           className="text-center mb-6 md:mb-10 relative"
         >
-          {/* Logout button in top-right corner */}
-          <motion.button
-            onClick={handleLogout}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="absolute top-0 right-4 px-4 py-2 bg-mocha-surface0/50 hover:bg-mocha-surface1/50 rounded-xl text-mocha-text text-sm font-semibold border border-mocha-surface2 transition-colors"
-          >
-            Logout
-          </motion.button>
+          {/* Top-right buttons */}
+          <div className="absolute top-0 right-4 flex gap-2">
+            {/* Connect Calendar button */}
+            {!hasCalendarAuth && (
+              <motion.button
+                onClick={() => authService.initiateCalendarAuth()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 bg-gradient-to-r from-mocha-blue to-mocha-sapphire hover:from-mocha-blue/80 hover:to-mocha-sapphire/80 rounded-xl text-mocha-base text-sm font-semibold shadow-lg border border-mocha-blue/30 transition-all"
+                title="Connect Google Calendar"
+              >
+                📅 Calendar
+              </motion.button>
+            )}
+            {hasCalendarAuth && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="px-4 py-2 bg-mocha-green/20 rounded-xl text-mocha-green text-sm font-semibold border border-mocha-green/30"
+                title="Calendar connected"
+              >
+                ✓ Calendar
+              </motion.div>
+            )}
+            {/* Logout button */}
+            <motion.button
+              onClick={handleLogout}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-2 bg-mocha-surface0/50 hover:bg-mocha-surface1/50 rounded-xl text-mocha-text text-sm font-semibold border border-mocha-surface2 transition-colors"
+            >
+              Logout
+            </motion.button>
+          </div>
 
           <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-mocha-blue via-mocha-mauve to-mocha-sapphire bg-clip-text text-transparent mb-2 md:mb-3">
             Productivity App
@@ -329,6 +420,9 @@ function App() {
                     tasks={tasks}
                     onToggleComplete={handleToggleComplete}
                     onDelete={handleDeleteTask}
+                    onSyncToCalendar={handleSyncToCalendar}
+                    onUnsyncFromCalendar={handleUnsyncFromCalendar}
+                    hasCalendarAuth={hasCalendarAuth}
                     filter={filter}
                   />
                 )}

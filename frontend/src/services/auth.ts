@@ -85,6 +85,59 @@ class AuthService {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
   }
+
+  /**
+   * Initiate Google Calendar authorization flow
+   * Opens Google OAuth consent screen in popup
+   */
+  initiateCalendarAuth(): void {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const redirectUri = window.location.origin;
+
+    const scope = [
+      'openid',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/calendar'
+    ].join(' ');
+
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${clientId}&` +
+      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+      `response_type=code&` +
+      `scope=${encodeURIComponent(scope)}&` +
+      `access_type=offline&` +
+      `prompt=consent`;
+
+    // Open in current window
+    window.location.href = authUrl;
+  }
+
+  /**
+   * Exchange authorization code for tokens with calendar access
+   */
+  async exchangeCalendarCode(code: string): Promise<AuthResponse> {
+    const response = await fetch(`${this.baseURL}/api/auth/google-calendar`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Calendar authorization failed');
+    }
+
+    const data: AuthResponse = await response.json();
+
+    // Store the token in localStorage
+    localStorage.setItem('auth_token', data.access_token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+
+    return data;
+  }
 }
 
 export const authService = new AuthService(API_BASE_URL);

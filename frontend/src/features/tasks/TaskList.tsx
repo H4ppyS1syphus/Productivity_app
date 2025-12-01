@@ -7,10 +7,21 @@ interface TaskListProps {
   tasks: Task[]
   onToggleComplete: (task: Task) => void
   onDelete: (taskId: number) => void
+  onSyncToCalendar?: (taskId: number) => void
+  onUnsyncFromCalendar?: (taskId: number) => void
+  hasCalendarAuth?: boolean
   filter?: 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
 }
 
-export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: TaskListProps) {
+export function TaskList({
+  tasks,
+  onToggleComplete,
+  onDelete,
+  onSyncToCalendar,
+  onUnsyncFromCalendar,
+  hasCalendarAuth = false,
+  filter = 'all'
+}: TaskListProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null)
   const filteredTasks = tasks.filter(task => {
     if (filter === 'all') return true
@@ -140,8 +151,34 @@ export function TaskList({ tasks, onToggleComplete, onDelete, filter = 'all' }: 
             )}
           </div>
 
-          {/* Delete button */}
+          {/* Action buttons */}
           <div className="flex-shrink-0 flex items-center gap-2">
+            {/* Calendar sync button */}
+            {hasCalendarAuth && onSyncToCalendar && onUnsyncFromCalendar && (
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  if (task.calendar_event_id) {
+                    onUnsyncFromCalendar(task.id)
+                  } else {
+                    onSyncToCalendar(task.id)
+                  }
+                }}
+                className={`p-2 rounded-lg transition-colors ${
+                  task.calendar_event_id
+                    ? 'text-mocha-green hover:text-mocha-green/70 hover:bg-mocha-green/20'
+                    : 'text-white/40 hover:text-mocha-blue hover:bg-mocha-blue/20'
+                }`}
+                title={task.calendar_event_id ? 'Synced to Calendar (click to unsync)' : 'Sync to Google Calendar'}
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </motion.button>
+            )}
+
             <AnimatePresence>
               {deleteConfirm === task.id ? (
                 <motion.div
