@@ -14,7 +14,9 @@
       "Bash(jq:*)",
       "Bash(TaskList.tsx)",
       "Bash(npm run dev:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(vercel env:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

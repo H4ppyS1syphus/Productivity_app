@@ -14,6 +14,8 @@ import { IntroAnimation } from './components/IntroAnimation'
 import { FloatingTimer } from './components/FloatingTimer'
 import { PWAInstallPrompt } from './components/PWAInstallPrompt'
 import { GoogleLogin } from './components/GoogleLogin'
+import { BottomNavigation } from './components/BottomNavigation'
+import { MobileHeader } from './components/MobileHeader'
 
 type FilterType = 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
 type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away'
@@ -204,14 +206,6 @@ function App() {
     gym: tasks.filter(t => t.type === 'gym_workout').length,
   }
 
-  const tabs = [
-    { id: 'tasks' as TabType, label: 'Tasks', emoji: '✅', color: 'from-mocha-green to-emerald-500' },
-    { id: 'streaks' as TabType, label: 'Streaks', emoji: '🔥', color: 'from-mocha-peach to-orange-500' },
-    { id: 'pomodoro' as TabType, label: 'Focus', emoji: '⏱️', color: 'from-mocha-blue to-blue-500' },
-    { id: 'gym' as TabType, label: 'Gym', emoji: '💪', color: 'from-mocha-mauve to-purple-500' },
-    { id: 'away' as TabType, label: 'Away', emoji: '✈️', color: 'from-mocha-sapphire to-cyan-500' },
-  ]
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-mocha-crust via-mocha-base to-mocha-mantle">
       {/* Intro Animation */}
@@ -234,58 +228,12 @@ function App() {
       {/* PWA Install Prompt */}
       <PWAInstallPrompt />
 
-      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8 max-w-7xl relative z-10">
-        {/* Header - Mobile Optimized */}
-        <motion.header
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-6 md:mb-10 relative"
-        >
-          {/* Top-right buttons */}
-          <div className="absolute top-0 right-4 flex gap-2">
-            {/* Connect Calendar button */}
-            {!hasCalendarAuth && (
-              <motion.button
-                onClick={() => authService.initiateCalendarAuth()}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 bg-gradient-to-r from-mocha-blue to-mocha-sapphire hover:from-mocha-blue/80 hover:to-mocha-sapphire/80 rounded-xl text-mocha-base text-sm font-semibold shadow-lg border border-mocha-blue/30 transition-all"
-                title="Connect Google Calendar"
-              >
-                📅 Calendar
-              </motion.button>
-            )}
-            {hasCalendarAuth && (
-              <motion.button
-                onClick={() => authService.initiateCalendarAuth()}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="px-4 py-2 bg-mocha-green/20 hover:bg-mocha-green/30 rounded-xl text-mocha-green text-sm font-semibold border border-mocha-green/30 transition-all cursor-pointer"
-                title="Calendar connected (click to reconnect)"
-              >
-                ✓ Calendar
-              </motion.button>
-            )}
-            {/* Logout button */}
-            <motion.button
-              onClick={handleLogout}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 bg-mocha-surface0/50 hover:bg-mocha-surface1/50 rounded-xl text-mocha-text text-sm font-semibold border border-mocha-surface2 transition-colors"
-            >
-              Logout
-            </motion.button>
-          </div>
-
-          <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-mocha-blue via-mocha-mauve to-mocha-sapphire bg-clip-text text-transparent mb-2 md:mb-3">
-            Productivity App
-          </h1>
-          <p className="text-mocha-text/70 text-sm md:text-lg font-medium px-4">
-            がんばって！ (Ganbatte!) - Let's do our best! 🌸
-          </p>
-        </motion.header>
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8 max-w-7xl relative z-10 pb-24 md:pb-8">
+        {/* Header - New Mobile Optimized */}
+        <MobileHeader
+          hasCalendarAuth={hasCalendarAuth}
+          onLogout={handleLogout}
+        />
 
         {/* Error message */}
         <AnimatePresence>
@@ -304,25 +252,11 @@ function App() {
           )}
         </AnimatePresence>
 
-        {/* Navigation Tabs - Mobile Optimized */}
-        <div className="flex gap-2 md:gap-3 mb-6 md:mb-8 overflow-x-auto pb-2 scrollbar-hide -mx-3 md:mx-0 px-3 md:px-0">
-          {tabs.map((tab) => (
-            <motion.button
-              key={tab.id}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveTab(tab.id)}
-              className={`relative flex-shrink-0 px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-lg transition-all ${
-                activeTab === tab.id
-                  ? `bg-gradient-to-r ${tab.color} text-white shadow-xl`
-                  : 'bg-gray-800/60 backdrop-blur-sm text-mocha-text/60 hover:bg-gray-800'
-              }`}
-            >
-              <span className="text-xl md:text-2xl mr-1 md:mr-2">{tab.emoji}</span>
-              <span className="whitespace-nowrap">{tab.label}</span>
-            </motion.button>
-          ))}
-        </div>
+        {/* Navigation - Bottom on mobile, Top on desktop */}
+        <BottomNavigation
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
         {/* Tab Content */}
         <AnimatePresence mode="wait">
