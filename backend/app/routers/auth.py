@@ -174,6 +174,8 @@ def google_calendar_auth(
         )
 
         # Exchange authorization code for tokens
+        # Must specify redirect_uri to match the one used in authorization request
+        flow.redirect_uri = settings.frontend_url
         flow.fetch_token(code=auth_request.code)
         credentials = flow.credentials
 
