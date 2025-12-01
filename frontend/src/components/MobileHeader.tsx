@@ -9,6 +9,7 @@ interface MobileHeaderProps {
 
 export function MobileHeader({ hasCalendarAuth, onLogout }: MobileHeaderProps) {
   const [showMenu, setShowMenu] = useState(false)
+  const currentUser = authService.getCurrentUser()
 
   return (
     <>
@@ -42,7 +43,15 @@ export function MobileHeader({ hasCalendarAuth, onLogout }: MobileHeaderProps) {
           </div>
 
           {/* Right: Desktop buttons */}
-          <div className="hidden md:flex gap-2">
+          <div className="hidden md:flex gap-2 items-center">
+            {/* User info badge */}
+            {currentUser && (
+              <div className="px-3 py-2 bg-mocha-surface0/50 rounded-xl border border-mocha-surface2">
+                <div className="text-xs text-mocha-subtext0">Logged in as</div>
+                <div className="text-sm font-semibold text-mocha-text">{currentUser.name}</div>
+              </div>
+            )}
+
             {/* Connect Calendar button */}
             {!hasCalendarAuth && (
               <motion.button
@@ -105,7 +114,7 @@ export function MobileHeader({ hasCalendarAuth, onLogout }: MobileHeaderProps) {
             >
               <div className="p-6">
                 {/* Close button */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-mocha-text">Menu</h2>
                   <motion.button
                     whileTap={{ scale: 0.9 }}
@@ -117,6 +126,21 @@ export function MobileHeader({ hasCalendarAuth, onLogout }: MobileHeaderProps) {
                     </svg>
                   </motion.button>
                 </div>
+
+                {/* User info */}
+                {currentUser && (
+                  <div className="mb-6 p-4 bg-gradient-to-r from-mocha-blue/10 to-mocha-mauve/10 rounded-xl border border-mocha-surface0">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-mocha-blue to-mocha-mauve flex items-center justify-center text-2xl font-bold text-white">
+                        {currentUser.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-bold text-mocha-text truncate">{currentUser.name}</div>
+                        <div className="text-xs text-mocha-subtext0 truncate">{currentUser.email}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Menu items */}
                 <div className="space-y-3">
