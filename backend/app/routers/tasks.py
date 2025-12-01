@@ -123,6 +123,7 @@ def complete_task(
 ):
     """
     Mark a task as completed.
+    If the task is synced to Google Calendar, the calendar event will be updated.
     """
     task = db.query(Task).filter(
         Task.id == task_id,
@@ -133,6 +134,32 @@ def complete_task(
         raise HTTPException(status_code=404, detail="Task not found")
 
     task.mark_complete()
+
+    # Update calendar event if synced
+    if task.calendar_event_id and current_user.google_refresh_token:
+        try:
+            from ..services.calendar import CalendarService
+            calendar_service = CalendarService(current_user, db)
+
+            # Update the event to mark it as done (add [DONE] prefix to title)
+            try:
+                event = calendar_service.get_event(task.calendar_event_id)
+                if event:
+                    updated_summary = f"[DONE] {event.get('summary', task.title)}"
+                    if not event.get('summary', '').startswith('[DONE]'):
+                        current_desc = event.get('description', '')
+                        updated_desc = f"{current_desc}\n\n✅ Completed in Productivity App" if current_desc else "✅ Completed in Productivity App"
+                        calendar_service.update_event(
+                            event_id=task.calendar_event_id,
+                            title=updated_summary,
+                            description=updated_desc
+                        )
+            except Exception as e:
+                # If calendar update fails, log but don't fail the task completion
+                print(f"Failed to update calendar event: {e}")
+        except Exception as e:
+            print(f"Failed to initialize calendar service: {e}")
+
     db.commit()
     db.refresh(task)
 
@@ -184,3 +211,36 @@ def delete_task(
     db.commit()
 
     return None
+
+
+@router.post("/reset-recurring", response_model=dict)
+def reset_recurring_tasks(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Reset all recurring tasks that should be reset (daily/weekly/monthly).
+    This checks all completed recurring tasks and resets them if their
+    recurrence period has passed.
+
+    Returns:
+        dict: Number of tasks reset
+    """
+    # Get all recurring tasks for the user
+    recurring_tasks = db.query(Task).filter(
+        Task.user_id == current_user.id,
+        Task.is_recurring == True
+    ).all()
+
+    reset_count = 0
+    for task in recurring_tasks:
+        if task.should_reset():
+            task.reset_recurring()
+            reset_count += 1
+
+    db.commit()
+
+    return {
+        "message": f"Reset {reset_count} recurring task(s)",
+        "reset_count": reset_count
+    }

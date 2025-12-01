@@ -110,6 +110,33 @@ class CalendarService:
 
         return events_result.get('items', [])
 
+    def get_event(
+        self,
+        event_id: str,
+        calendar_id: str = 'primary'
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Get a single calendar event by ID.
+
+        Args:
+            event_id: Event ID to fetch
+            calendar_id: Calendar ID (default: 'primary')
+
+        Returns:
+            Event object or None if not found
+        """
+        service = self._get_service()
+
+        try:
+            event = service.events().get(
+                calendarId=calendar_id,
+                eventId=event_id
+            ).execute()
+            return event
+        except Exception:
+            # Event not found or other error
+            return None
+
     def create_event(
         self,
         title: str,
