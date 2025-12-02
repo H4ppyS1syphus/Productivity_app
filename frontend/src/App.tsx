@@ -38,6 +38,9 @@ function App() {
   const [longestStreak, _setLongestStreak] = useState(0);
   const [statsExpanded, setStatsExpanded] = useState(false)
 
+  // Task-Timer integration
+  const [activeTimerTask, setActiveTimerTask] = useState<Task | null>(null)
+
   // Check authentication on mount
   useEffect(() => {
     const checkAuth = () => {
@@ -190,6 +193,15 @@ function App() {
       setError('Failed to unsync task from calendar')
       console.error('Error unsyncing task:', err)
     }
+  }
+
+  const handleStartTimerForTask = (task: Task) => {
+    setActiveTimerTask(task)
+    setActiveTab('pomodoro')
+  }
+
+  const handleStopTimer = () => {
+    setActiveTimerTask(null)
   }
 
   // Show login screen if not authenticated
@@ -452,6 +464,8 @@ function App() {
                     onDelete={handleDeleteTask}
                     onSyncToCalendar={handleSyncToCalendar}
                     onUnsyncFromCalendar={handleUnsyncFromCalendar}
+                    onStartTimer={handleStartTimerForTask}
+                    activeTimerTaskId={activeTimerTask?.id}
                     hasCalendarAuth={hasCalendarAuth}
                     filter={filter}
                   />
@@ -467,7 +481,12 @@ function App() {
               />
             )}
 
-            {activeTab === 'pomodoro' && <PomodoroTimer />}
+            {activeTab === 'pomodoro' && (
+              <PomodoroTimer
+                activeTask={activeTimerTask}
+                onStopTimer={handleStopTimer}
+              />
+            )}
 
             {activeTab === 'gym' && <GymTracker />}
 

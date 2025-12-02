@@ -1,7 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePomodoroStore, type TimerMode } from '@/stores/pomodoroStore'
+import { type Task } from '@/services/api'
 
-export function PomodoroTimer() {
+interface PomodoroTimerProps {
+  activeTask?: Task | null
+  onStopTimer?: () => void
+}
+
+export function PomodoroTimer({ activeTask, onStopTimer }: PomodoroTimerProps = {}) {
   const {
     timeLeft,
     isRunning,
@@ -41,6 +47,58 @@ export function PomodoroTimer() {
             className="mb-6 p-4 bg-mocha-surface1/80 backdrop-blur-sm border border-mocha-blue/50 rounded-xl text-mocha-text text-center font-medium"
           >
             {message}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Active Task Card */}
+      <AnimatePresence>
+        {activeTask && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="mb-6 p-4 bg-gradient-to-br from-mocha-peach/20 to-mocha-maroon/20 backdrop-blur-sm border border-mocha-peach/50 rounded-xl"
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-1">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                  className="w-8 h-8 rounded-full bg-mocha-peach/30 flex items-center justify-center"
+                >
+                  <svg className="w-5 h-5 text-mocha-peach" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </motion.div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-bold text-mocha-peach mb-1 uppercase tracking-wider">
+                  Working on
+                </div>
+                <h3 className="text-mocha-text font-bold text-lg leading-tight mb-1">
+                  {activeTask.title}
+                </h3>
+                {activeTask.description && (
+                  <p className="text-mocha-subtext0 text-sm line-clamp-2">
+                    {activeTask.description}
+                  </p>
+                )}
+              </div>
+              {onStopTimer && (
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={onStopTimer}
+                  className="flex-shrink-0 p-2 rounded-lg text-mocha-subtext0 hover:text-mocha-peach hover:bg-mocha-peach/20 transition-colors"
+                  title="Clear active task"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </motion.button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

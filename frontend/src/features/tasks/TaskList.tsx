@@ -10,6 +10,8 @@ interface TaskListProps {
   onDelete: (taskId: number) => void
   onSyncToCalendar?: (taskId: number) => void
   onUnsyncFromCalendar?: (taskId: number) => void
+  onStartTimer?: (task: Task) => void
+  activeTimerTaskId?: number
   hasCalendarAuth?: boolean
   filter?: 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
 }
@@ -21,6 +23,8 @@ export function TaskList({
   onDelete,
   onSyncToCalendar,
   onUnsyncFromCalendar,
+  onStartTimer,
+  activeTimerTaskId,
   hasCalendarAuth = false,
   filter = 'all'
 }: TaskListProps) {
@@ -211,6 +215,25 @@ export function TaskList({
 
             {/* Action buttons */}
             <div className="flex-shrink-0 flex items-center gap-2">
+              {/* Timer button */}
+              {onStartTimer && (
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => onStartTimer(task)}
+                  className={`p-2 rounded-lg transition-colors ${
+                    activeTimerTaskId === task.id
+                      ? 'text-mocha-peach bg-mocha-peach/20 animate-pulse'
+                      : 'text-white/40 hover:text-mocha-peach hover:bg-mocha-peach/20'
+                  }`}
+                  title={activeTimerTaskId === task.id ? 'Timer active for this task' : 'Start Pomodoro timer for this task'}
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </motion.button>
+              )}
+
               {/* Edit button */}
               {onUpdate && (
                 <motion.button
@@ -361,7 +384,7 @@ export function TaskList({
                 </div>
 
                 {/* Description */}
-                <div className="mb-6">
+                <div className="mb-5">
                   <label className="block text-sm font-bold text-mocha-text mb-2">
                     Description
                   </label>
@@ -375,6 +398,213 @@ export function TaskList({
                              focus:outline-none focus:ring-2 focus:ring-mocha-blue focus:border-mocha-blue
                              transition-all resize-none"
                   />
+                </div>
+
+                {/* Task Type */}
+                <div className="mb-5">
+                  <label className="block text-sm font-bold text-mocha-text mb-2">
+                    Task Type
+                  </label>
+                  <select
+                    value={editType}
+                    onChange={(e) => setEditType(e.target.value as Task['type'])}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-mocha-blue/30
+                             bg-mocha-surface1/60 text-white
+                             focus:outline-none focus:ring-2 focus:ring-mocha-blue focus:border-mocha-blue
+                             transition-all cursor-pointer"
+                  >
+                    <option value="daily" className="bg-mocha-surface0">📅 Daily</option>
+                    <option value="weekly" className="bg-mocha-surface0">📆 Weekly</option>
+                    <option value="monthly" className="bg-mocha-surface0">🗓️ Monthly</option>
+                    <option value="long_term" className="bg-mocha-surface0">🎯 Long Term</option>
+                    <option value="gym_workout" className="bg-mocha-surface0">💪 Gym Workout</option>
+                  </select>
+                </div>
+
+                {/* Recurring Task Options */}
+                {(editType === 'daily' || editType === 'weekly' || editType === 'monthly') && (
+                  <div className="mb-5">
+                    <label className="flex items-center cursor-pointer group mb-3">
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={editIsRecurring}
+                          onChange={(e) => setEditIsRecurring(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 rounded-full bg-mocha-surface1/60 border-2 border-mocha-blue/30
+                                      peer-checked:bg-gradient-to-r peer-checked:from-mocha-sapphire peer-checked:to-mocha-blue
+                                      peer-checked:border-mocha-sapphire transition-all"></div>
+                        <div className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white transition-all
+                                      peer-checked:translate-x-5"></div>
+                      </div>
+                      <span className="ml-3 text-sm font-semibold text-mocha-text group-hover:text-white transition-colors">
+                        🔄 Make this a recurring task
+                      </span>
+                    </label>
+
+                    {editIsRecurring && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="space-y-4 pl-4 border-l-2 border-mocha-sapphire/30"
+                      >
+                        {/* Time picker for all recurring types */}
+                        <div>
+                          <label className="block text-sm font-semibold text-mocha-subtext1 mb-2">
+                            Reset time
+                          </label>
+                          <input
+                            type="time"
+                            value={editRecurrenceTime}
+                            onChange={(e) => setEditRecurrenceTime(e.target.value)}
+                            className="w-full px-4 py-2 rounded-xl border-2 border-mocha-sapphire/30
+                                     bg-mocha-surface1/60 text-white
+                                     focus:outline-none focus:ring-2 focus:ring-mocha-sapphire
+                                     transition-all"
+                          />
+                        </div>
+
+                        {/* Day of week picker for weekly */}
+                        {editType === 'weekly' && (
+                          <div>
+                            <label className="block text-sm font-semibold text-mocha-subtext1 mb-2">
+                              Reset on
+                            </label>
+                            <select
+                              value={editRecurrenceDayOfWeek}
+                              onChange={(e) => setEditRecurrenceDayOfWeek(Number(e.target.value))}
+                              className="w-full px-4 py-2 rounded-xl border-2 border-mocha-sapphire/30
+                                       bg-mocha-surface1/60 text-white
+                                       focus:outline-none focus:ring-2 focus:ring-mocha-sapphire
+                                       transition-all cursor-pointer"
+                            >
+                              <option value={0}>Monday</option>
+                              <option value={1}>Tuesday</option>
+                              <option value={2}>Wednesday</option>
+                              <option value={3}>Thursday</option>
+                              <option value={4}>Friday</option>
+                              <option value={5}>Saturday</option>
+                              <option value={6}>Sunday</option>
+                            </select>
+                          </div>
+                        )}
+
+                        {/* Day of month picker for monthly */}
+                        {editType === 'monthly' && (
+                          <div>
+                            <label className="block text-sm font-semibold text-mocha-subtext1 mb-2">
+                              Reset on day
+                            </label>
+                            <input
+                              type="number"
+                              min="1"
+                              max="31"
+                              value={editRecurrenceDayOfMonth}
+                              onChange={(e) => setEditRecurrenceDayOfMonth(Number(e.target.value))}
+                              className="w-full px-4 py-2 rounded-xl border-2 border-mocha-sapphire/30
+                                       bg-mocha-surface1/60 text-white
+                                       focus:outline-none focus:ring-2 focus:ring-mocha-sapphire
+                                       transition-all"
+                              placeholder="Day of month (1-31)"
+                            />
+                            <p className="text-xs text-mocha-subtext0 mt-1">
+                              Task will reset on day {editRecurrenceDayOfMonth} of each month
+                            </p>
+                          </div>
+                        )}
+
+                        <div className="bg-mocha-sapphire/10 rounded-lg p-3 border border-mocha-sapphire/30">
+                          <p className="text-xs text-mocha-subtext1">
+                            <span className="font-bold text-mocha-sapphire">ℹ️ Recurring:</span>{' '}
+                            {editType === 'daily' && `This task will reset every day at ${editRecurrenceTime}`}
+                            {editType === 'weekly' && `This task will reset every ${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][editRecurrenceDayOfWeek]} at ${editRecurrenceTime}`}
+                            {editType === 'monthly' && `This task will reset on day ${editRecurrenceDayOfMonth} of each month at ${editRecurrenceTime}`}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                )}
+
+                {/* Due Date */}
+                <div className="mb-5">
+                  <label className="block text-sm font-bold text-mocha-text mb-2">
+                    Due Date
+                  </label>
+
+                  {/* Quick Date Buttons */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {[
+                      { label: 'Today', hours: 0 },
+                      { label: 'Tomorrow', hours: 24 },
+                      { label: 'In 3 days', hours: 72 },
+                      { label: 'Next week', hours: 168 },
+                      { label: 'In 2 weeks', hours: 336 },
+                    ].map((preset) => (
+                      <motion.button
+                        key={preset.label}
+                        type="button"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          const date = new Date()
+                          date.setHours(date.getHours() + preset.hours)
+                          setEditDueDate(date.toISOString().slice(0, 16))
+                        }}
+                        className="px-3 py-1.5 bg-mocha-surface0/80 hover:bg-mocha-surface1/60 text-mocha-subtext1 hover:text-white
+                                 text-xs font-semibold rounded-lg border border-mocha-surface2/50 hover:border-mocha-sapphire
+                                 transition-all"
+                      >
+                        {preset.label}
+                      </motion.button>
+                    ))}
+                    {editDueDate && (
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setEditDueDate('')}
+                        className="px-3 py-1.5 bg-mocha-red/20 hover:bg-mocha-red/30 text-mocha-red
+                                 text-xs font-semibold rounded-lg border border-mocha-red/50
+                                 transition-all"
+                      >
+                        ✕ Clear
+                      </motion.button>
+                    )}
+                  </div>
+
+                  <input
+                    type="datetime-local"
+                    value={editDueDate}
+                    onChange={(e) => setEditDueDate(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-mocha-blue/30
+                             bg-mocha-surface1/60 text-white
+                             focus:outline-none focus:ring-2 focus:ring-mocha-blue focus:border-mocha-blue
+                             transition-all"
+                  />
+                </div>
+
+                {/* Pause on Away */}
+                <div className="mb-6">
+                  <label className="flex items-center cursor-pointer group">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={editPauseOnAway}
+                        onChange={(e) => setEditPauseOnAway(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 rounded-full bg-mocha-surface1/60 border-2 border-mocha-blue/30
+                                    peer-checked:bg-gradient-to-r peer-checked:from-mocha-pink peer-checked:to-neon-purple
+                                    peer-checked:border-mocha-pink transition-all"></div>
+                      <div className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white transition-all
+                                    peer-checked:translate-x-5"></div>
+                    </div>
+                    <span className="ml-3 text-sm font-semibold text-mocha-text group-hover:text-white transition-colors">
+                      ✈️ Pause this task when I'm away
+                    </span>
+                  </label>
                 </div>
 
                 {/* Buttons */}
