@@ -18,7 +18,9 @@
       "Bash(vercel env:*)",
       "Bash(npm run build:*)",
       "Bash(alembic revision:*)",
-      "Bash(python -m alembic revision:*)"
+      "Bash(python -m alembic revision:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run test:run:*)"
     ],
     "deny": [],
     "ask": []
