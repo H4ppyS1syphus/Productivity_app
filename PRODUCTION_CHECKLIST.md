@@ -34,6 +34,32 @@ Before deploying to production, verify all features work correctly:
 - [ ] Can start timer on a different task while one is active
 - [ ] Active task display persists when switching timer modes (work/break/long break)
 
+## 📄 arXiv Paper Integration (NEW!)
+- [ ] Papers tab appears in navigation
+- [ ] Can switch between PhD Research and ML/AI Papers categories
+- [ ] PhD Research category fetches papers from hep-ex, hep-ph, cs.LG
+- [ ] Papers are filtered by PhD topic keywords (long-lived axion-like particles ATLAS)
+- [ ] ML/AI category fetches papers from cs.LG, cs.AI, stat.ML categories
+- [ ] Papers display with:
+  - Title (clickable link to arXiv)
+  - Authors (with "et al." for many authors)
+  - Abstract/Summary (expandable)
+  - Publication date
+  - Category badge (hep-ex, hep-ph, cs.LG, etc.)
+  - arXiv ID
+- [ ] "New" badge shows for papers published today
+- [ ] Can expand/collapse paper summaries by clicking
+- [ ] Can add paper to tasks (creates long-term task with paper details)
+- [ ] Adding paper to tasks switches to Tasks tab automatically
+- [ ] Refresh button reloads papers
+- [ ] Shows last updated timestamp
+- [ ] Loading state displays skeleton cards
+- [ ] Error state shows with retry button
+- [ ] Empty state shows helpful message
+- [ ] Search functionality works (if implemented)
+- [ ] Category filters work correctly
+- [ ] Responsive design works on mobile and desktop
+
 ## 📱 Mobile UI (Previously Enhanced)
 - [ ] Intro animation skips on mobile devices
 - [ ] Pomodoro timer is properly centered on mobile
@@ -96,8 +122,10 @@ Before deploying to production, verify all features work correctly:
 
 ## 🧪 Automated Tests
 - [ ] Run `npm run test:run`
-- [ ] Core functionality tests pass (26+ tests)
-- [ ] Note: Some animation-heavy UI tests may need manual verification
+- [ ] Core functionality tests pass (85+ tests passing)
+- [ ] arXiv service tests pass (18 tests)
+- [ ] arXiv component tests pass (38 tests)
+- [ ] Note: Some animation-heavy UI tests may need manual verification (3 skipped)
 
 ## 🔍 Manual Test Scenarios
 

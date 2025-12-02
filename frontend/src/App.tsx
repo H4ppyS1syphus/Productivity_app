@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { api, type Task, type TaskCreate, type TaskUpdate } from './services/api'
 import { authService } from './services/auth'
 import { calendarService } from './services/calendar'
+import { fetchPhDRelevantPapers, fetchMLPapers, type ArxivPaper } from './services/arxiv'
 import { TaskForm } from './features/tasks/TaskForm'
 import { TaskList } from './features/tasks/TaskList'
 import { StreakDisplay } from './features/streaks/StreakDisplay'
 import { PomodoroTimer } from './features/pomodoro/PomodoroTimer'
 import { GymTracker } from './features/gym/GymTracker'
 import { AwayMode } from './features/away/AwayMode'
+import { ArxivPaperList } from './features/arxiv/ArxivPaperList'
 import { CapybaraMascot } from './components/CapybaraMascot'
 import { IntroAnimation } from './components/IntroAnimation'
 import { FloatingTimer } from './components/FloatingTimer'
@@ -20,7 +22,7 @@ import { MobileHeader } from './components/MobileHeader'
 import { PullToRefresh } from './components/PullToRefresh'
 
 type FilterType = 'all' | 'daily' | 'weekly' | 'long_term' | 'gym_workout' | 'pending' | 'completed'
-type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away'
+type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away' | 'arxiv'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -40,6 +42,13 @@ function App() {
 
   // Task-Timer integration
   const [activeTimerTask, setActiveTimerTask] = useState<Task | null>(null)
+
+  // arXiv state
+  const [arxivPapers, setArxivPapers] = useState<ArxivPaper[]>([])
+  const [arxivLoading, setArxivLoading] = useState(false)
+  const [arxivError, setArxivError] = useState<string | null>(null)
+  const [arxivCategory, setArxivCategory] = useState<'phd' | 'ml'>('phd')
+  const [arxivLastUpdated, setArxivLastUpdated] = useState<string | null>(null)
 
   // Check authentication on mount
   useEffect(() => {
@@ -203,6 +212,55 @@ function App() {
   const handleStopTimer = () => {
     setActiveTimerTask(null)
   }
+
+  // arXiv handlers
+  const loadArxivPapers = async () => {
+    try {
+      setArxivLoading(true)
+      setArxivError(null)
+
+      const papers = arxivCategory === 'phd'
+        ? await fetchPhDRelevantPapers({ maxResults: 20 })
+        : await fetchMLPapers({ maxResults: 20 })
+
+      setArxivPapers(papers)
+      setArxivLastUpdated(new Date().toISOString())
+    } catch (err) {
+      setArxivError('Failed to load arXiv papers. Please try again.')
+      console.error('Error loading arXiv papers:', err)
+    } finally {
+      setArxivLoading(false)
+    }
+  }
+
+  const handleArxivCategoryChange = (category: 'phd' | 'ml') => {
+    setArxivCategory(category)
+  }
+
+  const handleAddPaperToTask = async (paper: ArxivPaper) => {
+    try {
+      const taskData: TaskCreate = {
+        title: `Read: ${paper.title}`,
+        description: `${paper.summary}\n\nAuthors: ${paper.authors.join(', ')}\nLink: ${paper.link}`,
+        type: 'long_term',
+        pause_on_away: false,
+      }
+
+      const newTask = await api.createTask(taskData)
+      setTasks([newTask, ...tasks])
+      setActiveTab('tasks')
+    } catch (err) {
+      setError('Failed to add paper to tasks')
+      console.error('Error adding paper to tasks:', err)
+    }
+  }
+
+  // Load arXiv papers when switching to arxiv tab
+  useEffect(() => {
+    if (activeTab === 'arxiv' && arxivPapers.length === 0) {
+      loadArxivPapers()
+    }
+  }, [activeTab, arxivCategory])
 
   // Show login screen if not authenticated
   if (isCheckingAuth) {
@@ -491,6 +549,48 @@ function App() {
             {activeTab === 'gym' && <GymTracker />}
 
             {activeTab === 'away' && <AwayMode />}
+
+            {activeTab === 'arxiv' && (
+              <div className="space-y-4">
+                {/* Category Selector */}
+                <div className="flex gap-2 mb-4">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleArxivCategoryChange('phd')}
+                    className={`px-6 py-3 rounded-xl font-bold transition-all ${
+                      arxivCategory === 'phd'
+                        ? 'bg-mocha-blue text-mocha-base'
+                        : 'bg-mocha-surface0 text-mocha-subtext0 hover:bg-mocha-surface1'
+                    }`}
+                  >
+                    🔬 PhD Research
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleArxivCategoryChange('ml')}
+                    className={`px-6 py-3 rounded-xl font-bold transition-all ${
+                      arxivCategory === 'ml'
+                        ? 'bg-mocha-blue text-mocha-base'
+                        : 'bg-mocha-surface0 text-mocha-subtext0 hover:bg-mocha-surface1'
+                    }`}
+                  >
+                    🤖 ML/AI Papers
+                  </motion.button>
+                </div>
+
+                <ArxivPaperList
+                  papers={arxivPapers}
+                  isLoading={arxivLoading}
+                  error={arxivError || undefined}
+                  onRetry={loadArxivPapers}
+                  onAddToTask={handleAddPaperToTask}
+                  onRefresh={loadArxivPapers}
+                  lastUpdated={arxivLastUpdated || undefined}
+                />
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

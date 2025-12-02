@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 
-export type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away'
+export type TabType = 'tasks' | 'streaks' | 'pomodoro' | 'gym' | 'away' | 'arxiv'
 
 interface BottomNavigationProps {
   activeTab: TabType
@@ -13,6 +13,7 @@ export function BottomNavigation({ activeTab, onTabChange }: BottomNavigationPro
     { id: 'streaks' as TabType, label: 'Streaks', emoji: '🔥', color: 'from-mocha-peach to-orange-500' },
     { id: 'pomodoro' as TabType, label: 'Focus', emoji: '⏱️', color: 'from-mocha-blue to-blue-500' },
     { id: 'gym' as TabType, label: 'Gym', emoji: '💪', color: 'from-mocha-mauve to-purple-500' },
+    { id: 'arxiv' as TabType, label: 'Papers', emoji: '📄', color: 'from-mocha-yellow to-yellow-500' },
     { id: 'away' as TabType, label: 'Away', emoji: '✈️', color: 'from-mocha-sapphire to-cyan-500' },
   ]
 
