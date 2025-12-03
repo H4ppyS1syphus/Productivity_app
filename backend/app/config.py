@@ -28,6 +28,14 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:5173"
     backend_url: str = "http://localhost:8000"
 
+    # LLM Configuration
+    llm_provider: str = "openai"  # "openai" or "anthropic"
+    openai_api_key: Optional[str] = None
+    anthropic_api_key: Optional[str] = None
+    llm_model: str = "gpt-4o-mini"  # or "claude-3-5-sonnet-20241022"
+    llm_temperature: float = 0.7
+    llm_max_tokens: int = 1000
+
     class Config:
         env_file = ".env"
         case_sensitive = False

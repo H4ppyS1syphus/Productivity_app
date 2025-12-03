@@ -23,5 +23,9 @@ pydantic-settings==2.1.0
 email-validator==2.3.0
 httpx==0.25.2
 
+# LLM Integration
+openai==1.54.0
+anthropic==0.39.0
+
 # WebSocket support
 websockets==12.0
