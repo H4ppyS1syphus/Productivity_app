@@ -11,6 +11,31 @@ A beautiful, feature-rich productivity application with Google Calendar integrat
 
 ## ✨ Features
 
+### 🤖 **AI Chatbot Assistant** (NEW!)
+- **Natural language interface** for task management
+- **Quick actions** for common tasks:
+  - ✅ Create tasks by describing them
+  - 💪 Log gym workouts conversationally
+  - 🔬 Search arXiv papers
+  - 📅 Sync tasks to calendar
+  - ⏱️ Start Pomodoro timers
+- **Context-aware** - Knows your current tasks and preferences
+- **Floating button** - Always accessible from anywhere in the app
+- **Beautiful chat UI** with animations and message history
+
+### 📄 **arXiv Paper Integration** (NEW!)
+- **PhD Research Papers** - Fetches from hep-ex, hep-ph, cs.LG
+  - Filtered by PhD topic: "long-lived axion-like particles ATLAS"
+- **ML/AI Papers** - Latest research from cs.LG, cs.AI, stat.ML
+- **Paper features:**
+  - Title, authors, abstract/summary
+  - Publication date with "New" badges
+  - Category badges (hep-ex, hep-ph, etc.)
+  - Direct arXiv links
+  - Add papers to tasks with one click
+- **Backend proxy** - No CORS issues, fast loading
+- **Responsive design** - Works great on mobile and desktop
+
 ### 📱 **Mobile-First Progressive Web App (PWA)**
 - **Installable** on mobile and desktop
 - **Offline support** with service workers
@@ -21,12 +46,13 @@ A beautiful, feature-rich productivity application with Google Calendar integrat
 - **Touch-friendly** - Large tap targets, smooth animations
 
 ### ✅ **Advanced Task Management**
-- **5 Task Types:**
+- **6 Task Types:**
   - 📅 Daily - Day-to-day tasks
   - 📆 Weekly - Weekly objectives
   - 🗓️ Monthly - Monthly goals
   - 🎯 Long Term - Big picture goals
   - 💪 Gym Workout - Fitness tracking
+  - ⚡ Once - One-time tasks that don't repeat
 
 - **Recurring Tasks:**
   - Daily tasks that auto-reset at specified time
@@ -131,6 +157,7 @@ A beautiful, feature-rich productivity application with Google Calendar integrat
 - **Pydantic** - Data validation
 - **Google OAuth 2.0** - Secure authentication
 - **Google Calendar API** - Calendar integration
+- **httpx** - Async HTTP client for arXiv proxy
 
 ### Deployment
 - **Frontend:** Vercel (auto-deploy from main branch)
@@ -245,6 +272,22 @@ uvicorn app.main:app --reload  # Development server at http://localhost:8000
 
 ## 🔄 Recent Updates
 
+### v1.6.0 - AI Chatbot & arXiv Integration 🤖📄
+- 🤖 **LLM Chatbot Assistant** - Natural language task management
+  - Context-aware conversations
+  - Action execution (create tasks, log gym, search papers, etc.)
+  - Floating chat button with beautiful UI
+- 📄 **arXiv Paper Integration** - PhD research & ML papers
+  - Backend proxy (no CORS issues)
+  - Filtered by research topics
+  - Add papers to tasks with one click
+- 🔐 **Auth Improvements** - Extended sessions & validation
+  - Token lifetime: 30 minutes → **7 days**
+  - Token validation on app startup
+  - Auto-logout on expired tokens
+- ⚡ **ONCE Task Type** - One-time tasks support
+- 🐛 **Bug Fixes** - arXiv CORS, auth persistence
+
 ### v1.5.0 - Mobile UI Overhaul
 - ❌ Disabled annoying intro animation on mobile
 - ⚡ Simplified desktop intro (1.5s from 4.8s)
@@ -277,14 +320,17 @@ uvicorn app.main:app --reload  # Development server at http://localhost:8000
 
 ## 🗺️ Roadmap
 
-### Planned Features
-- [ ] **ONCE task type** - One-time tasks that don't repeat
+### ✅ Recently Completed
+- [x] **AI Chatbot Assistant** - Natural language task management
+- [x] **arXiv Paper Integration** - PhD research & ML papers
+- [x] **ONCE task type** - One-time tasks that don't repeat
+- [x] **Extended auth sessions** - 7-day token lifetime
+
+### 🚧 In Progress
+- [ ] **LLM Backend Implementation** - Complete `/api/chat` endpoint
+
+### 🔮 Planned Features
 - [ ] **French i18n** - Full French translation + language switcher
-- [ ] **arXiv Paper Retrieval** - PhD research integration
-  - Experimental HEP papers
-  - High Energy Physics - Phenomenology
-  - ML breakthroughs
-  - Topic filtering for PhD research
 - [ ] **Sync FROM Google Calendar** - Import calendar events as tasks
 - [ ] **Streak tracking backend** - Server-side streak calculation
 - [ ] **Push notifications** - Browser notifications for task reminders
@@ -292,6 +338,7 @@ uvicorn app.main:app --reload  # Development server at http://localhost:8000
 - [ ] **Task templates** - Save and reuse common tasks
 - [ ] **Export/Import** - Backup and restore tasks
 - [ ] **Team collaboration** - Share tasks with others
+- [ ] **Voice commands** - "Hey Capybara, add a task..."
 
 ## 📄 License
 
