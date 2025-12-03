@@ -4,6 +4,7 @@ import { api, type Task, type TaskCreate, type TaskUpdate } from './services/api
 import { authService } from './services/auth'
 import { calendarService } from './services/calendar'
 import { fetchPhDRelevantPapers, fetchMLPapers, type ArxivPaper } from './services/arxiv'
+import { sendMessage, executeAction, type ChatMessage, type ChatContext, type GymWorkout } from './services/chatbot'
 import { TaskForm } from './features/tasks/TaskForm'
 import { TaskList } from './features/tasks/TaskList'
 import { StreakDisplay } from './features/streaks/StreakDisplay'
@@ -11,9 +12,11 @@ import { PomodoroTimer } from './features/pomodoro/PomodoroTimer'
 import { GymTracker } from './features/gym/GymTracker'
 import { AwayMode } from './features/away/AwayMode'
 import { ArxivPaperList } from './features/arxiv/ArxivPaperList'
+import { ChatInterface } from './features/chat/ChatInterface'
 import { CapybaraMascot } from './components/CapybaraMascot'
 import { IntroAnimation } from './components/IntroAnimation'
 import { FloatingTimer } from './components/FloatingTimer'
+import { FloatingChatButton } from './components/FloatingChatButton'
 import { PWAInstallPrompt } from './components/PWAInstallPrompt'
 import { PWAUpdateNotifier } from './components/PWAUpdateNotifier'
 import { GoogleLogin } from './components/GoogleLogin'
@@ -50,11 +53,25 @@ function App() {
   const [arxivCategory, setArxivCategory] = useState<'phd' | 'ml'>('phd')
   const [arxivLastUpdated, setArxivLastUpdated] = useState<string | null>(null)
 
-  // Check authentication on mount
+  // Chatbot state
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [chatLoading, setChatLoading] = useState(false)
+  const [chatError, setChatError] = useState<string | null>(null)
+
+  // Check authentication on mount and validate token
   useEffect(() => {
-    const checkAuth = () => {
-      const authenticated = authService.isAuthenticated()
-      setIsAuthenticated(authenticated)
+    const checkAuth = async () => {
+      const hasToken = authService.isAuthenticated()
+
+      if (hasToken) {
+        // Validate the token with backend
+        const isValid = await authService.validateToken()
+        setIsAuthenticated(isValid)
+      } else {
+        setIsAuthenticated(false)
+      }
+
       setIsCheckingAuth(false)
     }
     checkAuth()
@@ -262,6 +279,131 @@ function App() {
     }
   }, [activeTab, arxivCategory])
 
+  // Chat handlers
+  const handleSendChatMessage = async (message: string) => {
+    try {
+      setChatLoading(true)
+      setChatError(null)
+
+      // Add user message
+      const userMessage: ChatMessage = {
+        role: 'user',
+        content: message,
+        timestamp: new Date().toISOString(),
+      }
+      setChatMessages(prev => [...prev, userMessage])
+
+      // Build context
+      const context: ChatContext = {
+        tasks: tasks.map(t => ({
+          id: t.id,
+          title: t.title,
+          type: t.type,
+          status: t.status,
+          due_date: t.due_date,
+        })),
+        currentTab: activeTab,
+        arxivPapers: arxivPapers.map(p => ({
+          id: p.id,
+          title: p.title,
+          authors: p.authors,
+        })),
+        history: chatMessages,
+      }
+
+      // Send to LLM
+      const response = await sendMessage(message, context)
+
+      // Add assistant response
+      const assistantMessage: ChatMessage = {
+        role: 'assistant',
+        content: response.message,
+        timestamp: new Date().toISOString(),
+      }
+      setChatMessages(prev => [...prev, assistantMessage])
+
+      // Execute actions
+      for (const action of response.actions) {
+        const feedback = await executeAction(action, {
+          onCreateTask: async (data) => {
+            await handleCreateTask(data)
+          },
+          onLogGym: async (data: GymWorkout) => {
+            console.log('Logging gym workout:', data)
+            const systemMessage: ChatMessage = {
+              role: 'system',
+              content: '✅ Gym workout logged successfully',
+              timestamp: new Date().toISOString(),
+            }
+            setChatMessages(prev => [...prev, systemMessage])
+          },
+          onSearchArxiv: async (query: string) => {
+            console.log('Searching arXiv for:', query)
+            setActiveTab('arxiv')
+            const systemMessage: ChatMessage = {
+              role: 'system',
+              content: `🔍 Switching to arXiv papers tab to search for: ${query}`,
+              timestamp: new Date().toISOString(),
+            }
+            setChatMessages(prev => [...prev, systemMessage])
+          },
+          onSyncToCalendar: async (taskId: number) => {
+            await handleSyncToCalendar(taskId)
+            const systemMessage: ChatMessage = {
+              role: 'system',
+              content: '📅 Task synced to Google Calendar',
+              timestamp: new Date().toISOString(),
+            }
+            setChatMessages(prev => [...prev, systemMessage])
+          },
+          onStartTimer: async (taskId: number) => {
+            const task = tasks.find(t => t.id === taskId)
+            if (task) {
+              handleStartTimerForTask(task)
+              const systemMessage: ChatMessage = {
+                role: 'system',
+                content: `⏱️ Pomodoro timer started for: ${task.title}`,
+                timestamp: new Date().toISOString(),
+              }
+              setChatMessages(prev => [...prev, systemMessage])
+            }
+          },
+          onQueryTasks: async (filter?: string) => {
+            const systemMessage: ChatMessage = {
+              role: 'system',
+              content: `📋 Showing ${filter ? filter : 'all'} tasks`,
+              timestamp: new Date().toISOString(),
+            }
+            setChatMessages(prev => [...prev, systemMessage])
+            setActiveTab('tasks')
+            if (filter) {
+              setFilter(filter as FilterType)
+            }
+          },
+        })
+
+        // Add system feedback message
+        if (feedback) {
+          const systemMessage: ChatMessage = {
+            role: 'system',
+            content: feedback,
+            timestamp: new Date().toISOString(),
+          }
+          setChatMessages(prev => [...prev, systemMessage])
+        }
+      }
+    } catch (err) {
+      setChatError('Failed to send message. Please try again.')
+      console.error('Chat error:', err)
+    } finally {
+      setChatLoading(false)
+    }
+  }
+
+  const handleChatRetry = () => {
+    setChatError(null)
+  }
+
   // Show login screen if not authenticated
   if (isCheckingAuth) {
     return (
@@ -313,6 +455,20 @@ function App() {
 
       {/* PWA Auto-Update Notifier */}
       <PWAUpdateNotifier />
+
+      {/* Floating Chat Button */}
+      <FloatingChatButton onClick={() => setIsChatOpen(true)} hasUnread={false} />
+
+      {/* Chat Interface */}
+      <ChatInterface
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        initialMessages={chatMessages}
+        onSendMessage={handleSendChatMessage}
+        isLoading={chatLoading}
+        error={chatError || undefined}
+        onRetry={handleChatRetry}
+      />
 
       <div className="container mx-auto px-3 md:px-4 py-4 md:py-8 max-w-7xl relative z-10 pb-24 md:pb-8">
         {/* Header - New Mobile Optimized */}

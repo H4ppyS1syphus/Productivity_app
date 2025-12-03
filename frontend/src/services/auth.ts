@@ -72,6 +72,35 @@ class AuthService {
   }
 
   /**
+   * Validate token by calling /me endpoint
+   * Returns true if token is valid, false otherwise
+   */
+  async validateToken(): Promise<boolean> {
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const response = await fetch(`${this.baseURL}/api/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        // Token is invalid, clear it
+        this.logout();
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Token validation failed:', error);
+      this.logout();
+      return false;
+    }
+  }
+
+  /**
    * Get the auth token
    */
   getToken(): string | null {

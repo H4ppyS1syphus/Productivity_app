@@ -113,6 +113,15 @@ class APIClient {
       headers,
     });
 
+    // Handle 401 Unauthorized - token expired or invalid
+    if (response.status === 401) {
+      // Clear token and redirect to login
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
+      throw new Error('Session expired. Please log in again.');
+    }
+
     if (!response.ok) {
       throw new Error(`API error: ${response.statusText}`);
     }

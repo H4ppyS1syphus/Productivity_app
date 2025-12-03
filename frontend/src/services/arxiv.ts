@@ -16,10 +16,45 @@ export interface FetchOptions {
 }
 
 /**
+ * Fetches papers via backend proxy (avoids CORS issues)
+ * @param category - 'phd' or 'ml' category
+ * @param options - Optional fetch configuration
+ * @returns Array of parsed arXiv papers
+ */
+async function fetchViaBackend(
+  category: 'phd' | 'ml',
+  options: FetchOptions = {}
+): Promise<ArxivPaper[]> {
+  const { maxResults = 20 } = options
+
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+  const url = new URL(`${apiUrl}/api/arxiv/papers`)
+  url.searchParams.append('category', category)
+  url.searchParams.append('max_results', maxResults.toString())
+
+  try {
+    const response = await fetch(url.toString())
+
+    if (!response.ok) {
+      throw new Error(`Backend proxy error: ${response.status} ${response.statusText}`)
+    }
+
+    const xmlText = await response.text()
+    return parseArxivXML(xmlText)
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error('Failed to fetch arXiv papers via backend')
+  }
+}
+
+/**
  * Fetches papers from arXiv API for specified categories
  * @param categories - Array of arXiv categories (e.g., ['hep-ex', 'hep-ph', 'cs.LG'])
  * @param options - Optional fetch configuration
  * @returns Array of parsed arXiv papers
+ * @deprecated Use fetchViaBackend instead to avoid CORS issues
  */
 export async function fetchArxivPapers(
   categories: string[],
@@ -152,9 +187,8 @@ export async function fetchPhDRelevantPapers(
   options: FetchOptions = {}
 ): Promise<ArxivPaper[]> {
   try {
-    // Fetch from multiple categories
-    const categories = ['hep-ex', 'hep-ph', 'cs.LG']
-    const allPapers = await fetchArxivPapers(categories, {
+    // Use backend proxy to fetch PhD research papers
+    const allPapers = await fetchViaBackend('phd', {
       ...options,
       maxResults: options.maxResults || 50, // Fetch more to filter
     })
@@ -177,8 +211,8 @@ export async function fetchMLPapers(
   options: FetchOptions = {}
 ): Promise<ArxivPaper[]> {
   try {
-    // Search for ML papers with relevant keywords
-    const papers = await fetchArxivPapers(['cs.LG', 'cs.AI', 'stat.ML'], options)
+    // Use backend proxy to fetch ML papers
+    const papers = await fetchViaBackend('ml', options)
 
     // Could also filter by "OpenAI" in authors or search for specific topics
     return papers
